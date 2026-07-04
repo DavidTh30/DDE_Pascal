@@ -58,6 +58,37 @@ implementation
 
 { TForm1 }
 
+procedure TranslateError();
+var
+  lRet : Long;
+begin
+    lRet := DdeGetLastError(InstId);
+
+    Case lRet of
+      DMLERR_NO_ERROR : SendDebug('DMLERR_NO_ERROR');
+      DMLERR_ADVACKTIMEOUT : SendDebug('DMLERR_ADVACKTIMEOUT');
+      DMLERR_BUSY : SendDebug('DMLERR_BUSY');
+      DMLERR_DATAACKTIMEOUT : SendDebug('DMLERR_DATAACKTIMEOUT');
+      DMLERR_DLL_NOT_INITIALIZED : SendDebug('DMLERR_NOT_INITIALIZED');
+      DMLERR_DLL_USAGE : SendDebug('DMLERR_USAGE');
+      DMLERR_EXECACKTIMEOUT : SendDebug('DMLERR_EXECACKTIMEOUT');
+      DMLERR_INVALIDPARAMETER : SendDebug('DMLERR_INVALIDPARAMETER');
+      DMLERR_LOW_MEMORY : SendDebug('DMLERR_LOW_MEMORY');
+      DMLERR_MEMORY_ERROR : SendDebug('DMLERR_MEMORY_ERROR');
+      DMLERR_NOTPROCESSED : SendDebug('DMLERR_NOTPROCESSED');
+      DMLERR_NO_CONV_ESTABLISHED : SendDebug('DMLERR_NO_CONV_ESTABLISHED');
+      DMLERR_POKEACKTIMEOUT : SendDebug('DMLERR_POKEACKTIMEOUT');
+      DMLERR_POSTMSG_FAILED : SendDebug('DMLERR_POSTMSG_FAILED');
+      DMLERR_REENTRANCY : SendDebug('DMLERR_REENTRANCY');
+      DMLERR_SERVER_DIED : SendDebug('DMLERR_SERVER_DIED');
+      DMLERR_SYS_ERROR : SendDebug('DMLERR_SYS_ERROR');
+      DMLERR_UNADVACKTIMEOUT : SendDebug('DMLERR_UNADVACKTIMEOUT');
+      DMLERR_UNFOUND_QUEUE_ID : SendDebug('DMLERR_UNFOUND_QUEUE_ID');
+
+    end;
+
+End;
+
 procedure log(LINENUM_: integer; message_: string);
 begin
   SendDebug(LINENUM_.ToString+message_);
@@ -70,7 +101,6 @@ var
   cb: DWORD;
   //HSZPAIR FAR *phszp;
   phszp : ^HSZPAIR;
-  i:integer;
   lSize : Long;
   //sBuffer : String;
   sBuffer : array of Byte;
@@ -84,19 +114,17 @@ begin
   // Handle transactions here
   if form1.CheckBox1.Checked then
   begin
-    i:={$I %LINENUM%};
-    SendDebug(i.ToString+': In client callback. uFmt:'+ IntToHex(uFmt, 8) );
-    SendDebug(i.ToString+': In client callback. uType:'+ IntToHex(uType, 8));
+    log({$I %LINENUM%},': In client callback. uFmt:'+ IntToHex(uFmt, 8) );
+    log({$I %LINENUM%},': In client callback. uType:'+ IntToHex(uType, 8));
   end;
 
   if (uFmt = CF_TEXT) or (uFmt =0) then
   begin
     if (uType = XTYP_ADVDATA) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_ADVDATA');
+      log({$I %LINENUM%},': XTYP_ADVDATA');
       lSize := DdeGetData(hData, nil, 0, 0);
-      SendDebug(i.ToString+' lSize: '+lSize.ToString);
+      log({$I %LINENUM%},' lSize: '+lSize.ToString);
       If (lSize > 0) Then
       begin
         // Allocate a buffer for the return data.
@@ -111,55 +139,45 @@ begin
     end;
     if (uType = XTYP_ADVSTART) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_ADVSTART');
+      log({$I %LINENUM%},': XTYP_ADVSTART');
     end;
     if (uType = XTYP_ADVSTOP) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_ADVSTOP');
+      log({$I %LINENUM%},': XTYP_ADVSTOP');
     end;
     if (uType = XTYP_CONNECT) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_CONNECT');
+      log({$I %LINENUM%},': XTYP_CONNECT');
       Result := 1;
     end;
     if (uType = XTYP_CONNECT_CONFIRM) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_CONNECT_CONFIRM');
+      log({$I %LINENUM%},': XTYP_CONNECT_CONFIRM');
     end;
     if (uType = XTYP_DISCONNECT) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_DISCONNECT');
+      log({$I %LINENUM%},': XTYP_DISCONNECT');
     end;
     if (uType = XTYP_ERROR) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_ERROR');
+      log({$I %LINENUM%},': XTYP_ERROR');
     end;
     if (uType = XTYP_EXECUTE) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_EXECUTE');
+      log({$I %LINENUM%},': XTYP_EXECUTE');
     end;
     if (uType = XTYP_MASK) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_MASK');
+      log({$I %LINENUM%},': XTYP_MASK');
     end;
     if form1.CheckBox2.Checked then
     if (uType = XTYP_MONITOR) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_MONITOR');
+      log({$I %LINENUM%},': XTYP_MONITOR');
     end;
     if (uType = XTYP_POKE) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_POKE');
+      log({$I %LINENUM%},': XTYP_POKE');
 
       // Must return DDE_FACK to tell the client the server accepted it
       Result := DDE_FACK;
@@ -167,35 +185,29 @@ begin
     end;
     if (uType = XTYP_REGISTER) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_REGISTER');
+      log({$I %LINENUM%},': XTYP_REGISTER');
     end;
     if (uType = XTYP_REQUEST) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_REQUEST');
+      log({$I %LINENUM%},': XTYP_REQUEST');
     end;
     if (uType = XTYP_SHIFT) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_SHIFT');
+      log({$I %LINENUM%},': XTYP_SHIFT');
     end;
     if (uType = XTYP_UNREGISTER) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_UNREGISTER');
+      log({$I %LINENUM%},': XTYP_UNREGISTER');
     end;
     if (uType = XTYP_WILDCONNECT) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_WILDCONNECT');
+      log({$I %LINENUM%},': XTYP_WILDCONNECT');
       //DdeCreateDataHandle(InstId, nil, 2 * sizeof(HSZPAIR),0,0,0,0);
     end;
     if (uType = XTYP_XACT_COMPLETE) then   {DDE Client receiving asynchronous request results }
     begin
       // Data contains the result of the completed transaction
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_XACT_COMPLETE');
+      log({$I %LINENUM%},': XTYP_XACT_COMPLETE');
       // Must return DDE_FACK to acknowledge success
       Result := DDE_FACK;
     end;
@@ -228,34 +240,23 @@ begin
 end;
 
 procedure TForm1.cmdUninitializeClick(Sender: TObject);
-var
-  i:integer;
 begin
 
-  If (g_hDDEConv <> 0) Then
+  If (InstId>0) Then
   begin
-    SendDebug('Make sure we don''t have any open connections');
-    DDE_Disconnect();
-  End;
-
-  // Tear down the initialized instance.
-  If (g_lInstID>0) Then
-  begin
-    If DdeUninitialize(g_lInstID) Then
+    If DdeUninitialize(InstId) Then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+' DDE Uninitialize Success: '+ IntToHex(DdeInitializeResultCode_VB6, 8));
-      SendDebug(i.ToString+' g_lInstID: '+ g_lInstID.ToString);
+      log({$I %LINENUM%},' DDE Uninitialize Success: '+ IntToHex(DdeInitializeResultCode, 8));
+      log({$I %LINENUM%},' InstId: '+ InstId.ToString);
     end
     Else
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+' DDE Uninitialize Failure. '+ IntToHex(DdeInitializeResultCode_VB6, 8));
-      SendDebug(i.ToString+' g_lInstID: '+ g_lInstID.ToString);
+      log({$I %LINENUM%},' DDE Uninitialize Failure. '+ IntToHex(DdeInitializeResultCode, 8));
+      log({$I %LINENUM%},' InstId: '+ InstId.ToString);
       TranslateError();
     End;
 
-    g_lInstID := 0;
+    InstId := 0;
   End;
 
   SendDebug('-------------------- End DDE Test ------------------------');
