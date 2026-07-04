@@ -1,0 +1,91 @@
+// Source - https://stackoverflow.com/q/23300307
+// Posted by Natalie Cranston, modified by community. See post 'Timeline' for change history
+// Retrieved 2026-06-30, License - CC BY-SA 3.0
+
+// The following code fragment uses Windows DDEML APIs
+// to send a move command to the Nucleus DDE Server
+// and receives a status string.
+//
+// Variables and initial values.
+HCONV hConv = NULL;
+
+DWORD idInst = 0;
+HSZ hszService = NULL;
+HSZ hszTopic = NULL;
+HSZ hszCmd = NULL;
+BOOL err = FALSE;
+HDDEDATA transResult = NULL;
+DWORD dwResult = 0;
+char result[300];
+// Need long timeout value to allow the station to move and
+// respond.
+const long TIMEOUT = 60000;
+// Initialize the DDEML environment. Create an Instance
+// that is used in many other calls to DDE.
+if(DMLERR_NO_ERROR != DdeInitialize(&idInst, MyDDECallBack,
+                                    APPCMD_CLIENTONLY, 0))
+  err = true;
+// Create String handles for the server name, topic and item.
+if(!err)
+{
+  hszService = DdeCreateStringHandle(idInst, "EDMAIN",
+                                     CP_WINANSI);
+  hszTopic = DdeCreateStringHandle(idInst, "CMI Commands",
+                                   CP_WINANSI);
+  hszCmd = DdeCreateStringHandle(idInst,
+                                 ":MOVE:REL 2 100 100 NONE",
+                                 CP_WINANSI);
+  err = (hszService == NULL || hszTopic == NULL || hszCmd == NULL);
+}
+// Connect to the Nucleus DDE Server. (Open a conversation).
+// Captain Picard would say, "Open a channel Mr. Wharf".
+if(!err)
+{
+  hConv = DdeConnect(idInst, hszService, hszTopic, NULL);
+  err = hConv == NULL;
+  if(err)
+    MessageBox(NULL, "Unable to make DDE connection.\n"
+               "Make sure Nucleus is running.",
+               "DDE CLIENT ERROR", MB_ICONSTOP);
+}
+// Send the command string to the server.
+if (!err)
+{
+  transResult = DdeClientTransaction(NULL, 0, hConv, hszCmd,
+                                     CF_TEXT, XTYP_REQUEST, TIMEOUT, NULL);
+  // Read the result string. TransResult will be a
+  // valid data handle if the client transaction above
+  // was successful, and NULL if it was not. This must be
+  // checked since calls to DdeGetData with a NULL handle
+  // cause GPF’s.
+
+  if(transResult)
+    DdeGetData(transResult, (LPBYTE)result, sizeof(result), 0);
+  // Display the result string.
+  MessageBox(NULL, result, "RESULT", MB_ICONINFORMATION);
+}
+// Close the conversation.
+if (hConv != NULL)
+  DdeDisconnect( hConv );
+// Delete the string handles.
+if ((hszService != NULL) & (idInst != NULL))
+  DdeFreeStringHandle( idInst, hszService );
+if ((hszTopic != NULL) & (idInst != NULL))
+  DdeFreeStringHandle( idInst, hszTopic );
+if ((hszCmd != NULL) & (idInst != NULL))
+  DdeFreeStringHandle( idInst, hszCmd );
+// Clear out the DDEML environment.
+if (idInst != NULL)
+  DdeUninitialize(idInst);
+..
+// Since we are only doing requests from Nucleus, we don’t
+// expect to get callbacks to this routine. Nevertheless,
+// it is necessary to create a routine with no action.
+HDDEDATA CALLBACK MyDDECallBack( UINT wType,
+                                 UINT wFmt, HCONV HConv, 
+                                 HSZ dataHandle1, HSZ dataHandle2,
+                                 HDDEDATA data, DWORD myword1, 
+                                 DWORD myword2)
+{
+  return NULL;
+}

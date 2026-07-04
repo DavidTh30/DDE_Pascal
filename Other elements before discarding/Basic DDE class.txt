@@ -1,0 +1,38 @@
+UNIT ddeml_laz;
+ 
+INTERFACE
+ 
+uses Windows, classes, SysUtils;
+ 
+type
+    TDataMode = (ddeAutomatic, ddeManual);
+ 
+{ this is a stripped out version of the Delphi-provided TDDEClientConv object.
+- some modifications applied by pr
+pr 2018 : adapted to Lazarus / FreePascal
+pr 2018 : moved PChar functions into protected, made public routiens string based
+}
+    TTreeDDEClientConv=class( TComponent )  { synch calls only }
+    private
+        HConversation : HConv;
+        HService, HTopic : HSz;
+        FService, FTopic : string;
+    protected
+        FUNCTION PRequestData( Item : string ) : PChar;
+        FUNCTION PPokeData( Item : string; Data : PChar ) : BOOLEAN;
+ 
+    public
+        ConnectMode : TDataMode;
+        WaitStat : BOOLEAN;  { forced to be FALSE = always ready}
+ 
+        CONSTRUCTOR Create( AOwner : TComponent ); virtual;
+        Destructor Destroy; override;
+ 
+        PROCEDURE SetLink( Service, Topic : string );
+        FUNCTION OpenLink : BOOLEAN;
+        PROCEDURE CloseLink;
+ 
+        function RequestData( Item : string ) : string;
+        function PokeData( Item, Data : string ):boolean;  // true=worked
+        procedure Execute( Cmd : string );
+    end;
