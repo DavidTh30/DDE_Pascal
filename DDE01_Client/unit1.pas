@@ -94,6 +94,11 @@ implementation
 
 { TForm1 }
 
+procedure log(LINENUM_: integer; message_: string);
+begin
+  SendDebug(LINENUM_.ToString+message_);
+end;
+
 function ReadDdeWithAccessData(hData: HDDEDATA): string;
 var
   DataPtr: PByte;
@@ -214,24 +219,19 @@ begin
 End;
 
 procedure DDE_Disconnect();
-var
-  i:integer;
 Begin
   // Disconnect the DDE conversation.
-  i:={$I %LINENUM%};
-  SendDebug(i.ToString+' g_hDDEConv: '+ g_hDDEConv.ToString);
+  log({$I %LINENUM%},' g_hDDEConv: '+ g_hDDEConv.ToString);
 
   If (g_hDDEConv>0) Then
   begin
     If DdeDisconnect(g_hDDEConv) Then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+' DDE Disconnect Success.: '+ IntToHex(DdeInitializeResultCode_VB6, 8));
+      log({$I %LINENUM%},' DDE Disconnect Success.: '+ IntToHex(DdeInitializeResultCode_VB6, 8));
     end
     Else
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+' DDE Disconnect Failure.: '+ IntToHex(DdeInitializeResultCode_VB6, 8));
+      log({$I %LINENUM%},' DDE Disconnect Failure.: '+ IntToHex(DdeInitializeResultCode_VB6, 8));
       TranslateError();
     End;
     g_hDDEConv := 0;
@@ -260,8 +260,6 @@ begin
 End;
 
 procedure DDE_CreateStringHandles(var sTheService : String; var sTheTopic : String; const sTheItem : String = '');
-var
-  i:integer;
 begin
   // Create the string handles for the service and topic. DDEML will not
   // allow you to use standard strings. NOTE: Make sure to release the
@@ -283,7 +281,6 @@ Function DDE_Connect() : Long;
 var
   udtConvCont : CONVCONTEXT;
   hDDEConv : Long;
-  i:integer;
 begin
 
     // Set up the conversation context structure.
@@ -295,15 +292,14 @@ begin
     // Open the connection to the service.
     hDDEConv := DdeConnect(g_lInstID, g_hService, g_hTopic, udtConvCont);
 
-    i:={$I %LINENUM%};
     // Do we have a connection?
     If (hDDEConv>0) Then
     begin
-      SendDebug(i.ToString+' DDE Connection Success.');
+      log({$I %LINENUM%},' DDE Connection Success.');
     end
     Else
     begin
-      SendDebug(i.ToString+' DDE Connection Failure.');
+      log({$I %LINENUM%},' DDE Connection Failure.');
       TranslateError();
 
     End;
@@ -371,14 +367,11 @@ var
   DataLen: DWORD;
   hData: HDDEDATA;
   ResultData: HDDEDATA;
-  i:integer;
 begin
 
 
 
   if MainhData = 0 then Exit;
-
-  i:={$I %LINENUM%};
 
   //AnsiVal: AnsiString;
   //DataPtr: PByte;
@@ -407,11 +400,11 @@ begin
   if ResultData > 0 then
   begin
     hData := ResultData;  // Update with the newly generated handle
-    SendDebug(i.ToString+' DdeAddData Success ResultData: '+ResultData.ToString);
+    log({$I %LINENUM%},' DdeAddData Success ResultData: '+ResultData.ToString);
   end
   else
   begin
-    SendDebug(i.ToString+' Handle error DdeAddData ResultData: '+ResultData.ToString);
+    log({$I %LINENUM%},' Handle error DdeAddData ResultData: '+ResultData.ToString);
     TranslateError();
   end;
 end;
@@ -423,7 +416,6 @@ var
   cb: DWORD;
   //HSZPAIR FAR *phszp;
   phszp : ^HSZPAIR;
-  i:integer;
   lSize : Long;
   //sBuffer : String;
   sBuffer : array of Byte;
@@ -437,19 +429,17 @@ begin
   // Handle transactions here
   if form1.CheckBox1.Checked then
   begin
-    i:={$I %LINENUM%};
-    SendDebug(i.ToString+': In client callback. uFmt:'+ IntToHex(uFmt, 8) );
-    SendDebug(i.ToString+': In client callback. uType:'+ IntToHex(uType, 8));
+    log({$I %LINENUM%},': In client callback. uFmt:'+ IntToHex(uFmt, 8) );
+    log({$I %LINENUM%},': In client callback. uType:'+ IntToHex(uType, 8));
   end;
 
   if (uFmt = CF_TEXT) or (uFmt =0) then
   begin
     if (uType = XTYP_ADVDATA) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_ADVDATA');
+      log({$I %LINENUM%},': XTYP_ADVDATA');
       lSize := DdeGetData(hData, nil, 0, 0);
-      SendDebug(i.ToString+' lSize: '+lSize.ToString);
+      log({$I %LINENUM%},' lSize: '+lSize.ToString);
       If (lSize > 0) Then
       begin
         // Allocate a buffer for the return data.
@@ -464,55 +454,45 @@ begin
     end;
     if (uType = XTYP_ADVSTART) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_ADVSTART');
+      log({$I %LINENUM%},': XTYP_ADVSTART');
     end;
     if (uType = XTYP_ADVSTOP) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_ADVSTOP');
+      log({$I %LINENUM%},': XTYP_ADVSTOP');
     end;
     if (uType = XTYP_CONNECT) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_CONNECT');
+      log({$I %LINENUM%},': XTYP_CONNECT');
       Result := 1;
     end;
     if (uType = XTYP_CONNECT_CONFIRM) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_CONNECT_CONFIRM');
+      log({$I %LINENUM%},': XTYP_CONNECT_CONFIRM');
     end;
     if (uType = XTYP_DISCONNECT) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_DISCONNECT');
+      log({$I %LINENUM%},': XTYP_DISCONNECT');
     end;
     if (uType = XTYP_ERROR) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_ERROR');
+      log({$I %LINENUM%},': XTYP_ERROR');
     end;
     if (uType = XTYP_EXECUTE) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_EXECUTE');
+      log({$I %LINENUM%},': XTYP_EXECUTE');
     end;
     if (uType = XTYP_MASK) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_MASK');
+      log({$I %LINENUM%},': XTYP_MASK');
     end;
     if form1.CheckBox2.Checked then
     if (uType = XTYP_MONITOR) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_MONITOR');
+      log({$I %LINENUM%},': XTYP_MONITOR');
     end;
     if (uType = XTYP_POKE) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_POKE');
+      log({$I %LINENUM%},': XTYP_POKE');
       // Data contains the text payload sent by the client
       ReceivedText := ExtractStringFromDde(hData);
       SendDebug('ReceivedText: '+ReceivedText);
@@ -525,61 +505,55 @@ begin
     end;
     if (uType = XTYP_REGISTER) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_REGISTER');
+      log({$I %LINENUM%},': XTYP_REGISTER');
       If (g_lInstID>0) Then
       begin
-        SendDebug(i.ToString+' XTYP_REGISTER DdeQueryString');
+        log({$I %LINENUM%},' XTYP_REGISTER DdeQueryString');
         lSize := DdeQueryString(g_lInstID, hsz2, nil, 0, CP_WINANSI);
-        SendDebug(i.ToString+' hsz2 lSize: '+lSize.ToString);
+        log({$I %LINENUM%},' hsz2 lSize: '+lSize.ToString);
 
         Buffer:=Space(SizeOf(sBuffer));
         s := string(Buffer);
-        SendDebug(i.ToString+' Empty: '+s);
+        log({$I %LINENUM%},' Empty: '+s);
 
         //sBuffer := Space(lSize);
         //DdeQueryString(g_lInstID, hsz2, @sBuffer, lSize + 1, CP_WINANSI);
         lSize := DdeQueryString(g_lInstID, hsz2, Buffer, lSize+1, CP_WINANSI);
         //sBuffer := UpperCase(sBuffer);
         s := string(Buffer);
-        SendDebug(i.ToString+' ResultString: '+s);
+        log({$I %LINENUM%},' ResultString: '+s);
 
         lSize := DdeQueryString(g_lInstID, hsz1, nil, 0, CP_WINANSI);
-        SendDebug(i.ToString+' hsz1 lSize: '+lSize.ToString);
+        log({$I %LINENUM%},' hsz1 lSize: '+lSize.ToString);
         Buffer:=Space(SizeOf(sBuffer));
         s := string(Buffer);
-        SendDebug(i.ToString+' Empty: '+s);
+        log({$I %LINENUM%},' Empty: '+s);
         lSize := DdeQueryString(g_lInstID, hsz2, Buffer, lSize+1, CP_WINANSI);
         s := string(Buffer);
-        SendDebug(i.ToString+' ResultString: '+s);
+        log({$I %LINENUM%},' ResultString: '+s);
       end;
     end;
     if (uType = XTYP_REQUEST) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_REQUEST');
+      log({$I %LINENUM%},': XTYP_REQUEST');
     end;
     if (uType = XTYP_SHIFT) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_SHIFT');
+      log({$I %LINENUM%},': XTYP_SHIFT');
     end;
     if (uType = XTYP_UNREGISTER) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_UNREGISTER');
+      log({$I %LINENUM%},': XTYP_UNREGISTER');
     end;
     if (uType = XTYP_WILDCONNECT) then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_WILDCONNECT');
+      log({$I %LINENUM%},': XTYP_WILDCONNECT');
       //DdeCreateDataHandle(InstId, nil, 2 * sizeof(HSZPAIR),0,0,0,0);
     end;
     if (uType = XTYP_XACT_COMPLETE) then   {DDE Client receiving asynchronous request results }
     begin
       // Data contains the result of the completed transaction
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+': XTYP_XACT_COMPLETE');
+      log({$I %LINENUM%},': XTYP_XACT_COMPLETE');
       ReceivedText := ExtractStringFromDde(hData);
 
       // TODO: Process your asynchronously received string data here
@@ -602,7 +576,6 @@ end;
 
 procedure TForm1.Button10Click(Sender: TObject);
 var
-  i:integer;
   sValue : String;
   AnsiVal: AnsiString;
   DataPtr: PByte;
@@ -610,7 +583,6 @@ var
   hData: HDDEDATA;
   ResultData: HDDEDATA;
 begin
-  i:={$I %LINENUM%};
 
   AnsiVal := AnsiString(txtValue.Text) + #0;
   DataPtr := PByte(PAnsiChar(AnsiVal));
@@ -618,7 +590,7 @@ begin
 
   if hConv_ = 0 then
   begin
-    SendDebug(i.ToString+' Connect bad hConv_: '+hConv_.ToString);
+    log({$I %LINENUM%},' Connect bad hConv_: '+hConv_.ToString);
   end
   else
   begin
@@ -629,7 +601,7 @@ begin
 
     if hDataQUOTE > 0 then
     begin
-      SendDebug(i.ToString+' DdeClientTransaction POKE Success hDataQUOTE: ' + hDataQUOTE.ToString);
+      log({$I %LINENUM%},' DdeClientTransaction POKE Success hDataQUOTE: ' + hDataQUOTE.ToString);
 
       //hData := DdeCreateDataHandle(
       //         InstId,
@@ -655,7 +627,7 @@ begin
     end
     Else
     begin
-      SendDebug(i.ToString+' DdeClientTransaction POKE Failed hDataQUOTE: ' + hDataQUOTE.ToString);
+      log({$I %LINENUM%},' DdeClientTransaction POKE Failed hDataQUOTE: ' + hDataQUOTE.ToString);
       TranslateError();
       exit;
     End;
@@ -665,24 +637,18 @@ begin
 end;
 
 procedure TForm1.Button11Click(Sender: TObject);
-var
-  i:integer;
 begin
-  i:={$I %LINENUM%};
-
   if hDataQUOTE > 0 then
     begin
       AppendTextToDDE(hDataQUOTE,txtValue.Text);
     end
     Else
     begin
-      SendDebug(i.ToString+' DdeClientTransaction POKE Failed hDataQUOTE: ' + hDataQUOTE.ToString);
+      log({$I %LINENUM%},' DdeClientTransaction POKE Failed hDataQUOTE: ' + hDataQUOTE.ToString);
     End;
 end;
 
 procedure TForm1.Button2Click(Sender: TObject);
-var
-  i:integer;
 begin
   //Registers or unregisters the service names
   //XTYP_REGISTER or XTYP_UNREGISTER
@@ -714,24 +680,20 @@ begin
 
    if DdeInitializeResultCode_Pascal <> DMLERR_NO_ERROR then
    begin
-     i:={$I %LINENUM%};
-     SendDebug(i.ToString+' DdeInitialize failed! Error code: '+ IntToHex(DdeInitializeResultCode_Pascal, 8));
-     SendDebug(i.ToString+' g_lInstID: '+ InstId.ToString);
+     log({$I %LINENUM%},' DdeInitialize failed! Error code: '+ IntToHex(DdeInitializeResultCode_Pascal, 8));
+     log({$I %LINENUM%},' g_lInstID: '+ InstId.ToString);
      TranslateError();
      exit;
    end
    Else
    begin
-     i:={$I %LINENUM%};
-     SendDebug(i.ToString+' DDE Initialize Success: '+ IntToHex(DdeInitializeResultCode_Pascal, 8));
-     SendDebug(i.ToString+' InstId: '+ InstId.ToString);
+     log({$I %LINENUM%},' DDE Initialize Success: '+ IntToHex(DdeInitializeResultCode_Pascal, 8));
+     log({$I %LINENUM%},' InstId: '+ InstId.ToString);
    End;
 
 end;
 
 procedure TForm1.Button3Click(Sender: TObject);
-var
-  i:integer;
 begin
   // Create string handles
   g_hszAppName := DdeCreateStringHandle(InstId, PAnsiChar(txtService1.Text), CP_WINANSI);
@@ -749,19 +711,18 @@ begin
   //  showmessage('hszString (empty string): '+ResultString);
   //end;
 
-  i:={$I %LINENUM%};
-  SendDebug(i.ToString+'After create string handles -------------------------');
-  SendDebug(i.ToString+' g_hszAppName: '+ g_hszAppName.ToString);
-  SendDebug(i.ToString+' g_hszTopicName: '+ g_hszTopicName.ToString);
-  SendDebug(i.ToString+' g_hszItemName: '+ g_hszItemName.ToString);
+  log({$I %LINENUM%},'After create string handles -------------------------');
+  log({$I %LINENUM%},' g_hszAppName: '+ g_hszAppName.ToString);
+  log({$I %LINENUM%},' g_hszTopicName: '+ g_hszTopicName.ToString);
+  log({$I %LINENUM%},' g_hszItemName: '+ g_hszItemName.ToString);
 
-  SendDebug(i.ToString+'Recheck string handles -------------------------');
+  log({$I %LINENUM%},'Recheck string handles -------------------------');
   Length_ := DdeQueryString(InstId, g_hszAppName, Buffer, SizeOf(Buffer), CP_WINANSI);
   if Length_ > 0 then
   begin
     // ResultString now contains the string value
     ResultString := string(Buffer);
-    SendDebug(i.ToString+' ResultString g_hszAppName: '+ResultString);
+    log({$I %LINENUM%},' ResultString g_hszAppName: '+ResultString);
   end;
 
   Length_ := DdeQueryString(InstId, g_hszTopicName, Buffer, SizeOf(Buffer), CP_WINANSI);
@@ -769,7 +730,7 @@ begin
   begin
     // ResultString now contains the string value
     ResultString := string(Buffer);
-    SendDebug(i.ToString+' ResultString g_hszTopicName: '+ResultString);
+    log({$I %LINENUM%},' ResultString g_hszTopicName: '+ResultString);
   end;
 
   Length_ := DdeQueryString(InstId, g_hszItemName, Buffer, SizeOf(Buffer), CP_WINANSI);
@@ -777,28 +738,25 @@ begin
   begin
     // ResultString now contains the string value
     ResultString := string(Buffer);
-    SendDebug(i.ToString+' ResultString g_hszItemName: '+ResultString);
+    log({$I %LINENUM%},' ResultString g_hszItemName: '+ResultString);
   end;
 
 
 end;
 
 procedure TForm1.Button4Click(Sender: TObject);
-var
-  i:integer;
 begin
   // Open the conversation/connect
   SendDebug('Open the conversation/connect ----------------');
   hConv_ := DdeConnect(InstId, g_hszAppName, g_hszTopicName, nil);
-  i:={$I %LINENUM%};
 
   if hConv_ > 0 then
   begin
-    SendDebug(i.ToString+' Connected Success hConv_: '+hConv_.ToString);
+    log({$I %LINENUM%},' Connected Success hConv_: '+hConv_.ToString);
   end
   else
   begin
-    SendDebug(i.ToString+' Connect failed hConv_: '+hConv_.ToString);
+    log({$I %LINENUM%},' Connect failed hConv_: '+hConv_.ToString);
     TranslateError();
   end;
 
@@ -808,7 +766,6 @@ procedure TForm1.Button5Click(Sender: TObject);
 var
   i:integer;
 begin
-  i:={$I %LINENUM%};
 
   if hConv_ = 0 then
   begin
@@ -833,11 +790,11 @@ begin
 
       if hDataQUOTE > 0 then
       begin
-        SendDebug(i.ToString+' DdeClientTransaction Request Success hDataQUOTE: ' + hDataQUOTE.ToString);
+        log({$I %LINENUM%},' DdeClientTransaction Request Success hDataQUOTE: ' + hDataQUOTE.ToString);
       end
       Else
       begin
-        SendDebug(i.ToString+' DdeClientTransaction Request Failed hDataQUOTE: ' + hDataQUOTE.ToString);
+        log({$I %LINENUM%},' DdeClientTransaction Request Failed hDataQUOTE: ' + hDataQUOTE.ToString);
         TranslateError();
       End;
 
@@ -846,13 +803,10 @@ end;
 
 procedure TForm1.Button6Click(Sender: TObject);
 var
-  i:integer;
   DataSize: DWORD;
   sBuffer: array of Byte;
   s:AnsiString;
 begin
-
-  i:={$I %LINENUM%};
 
   if hDataQUOTE > 0 then
   begin
@@ -860,7 +814,7 @@ begin
 
     //Get target DDE size
     DataSize := DdeGetData(hDataQUOTE, nil, 0, 0);
-    SendDebug(i.ToString+' DataSize: ' + DataSize.ToString);
+    log({$I %LINENUM%},' DataSize: ' + DataSize.ToString);
 
     //Allocate/Resize local memory buffer
     SetLength(sBuffer, DataSize);
@@ -887,30 +841,26 @@ begin
   end
   else
   begin
-    SendDebug(i.ToString+' ClientTransaction Failed hDataQUOTE: ' + hDataQUOTE.ToString);
+    log({$I %LINENUM%},' ClientTransaction Failed hDataQUOTE: ' + hDataQUOTE.ToString);
   end;
 
 
 end;
 
 procedure TForm1.Button7Click(Sender: TObject);
-var
-  i:integer;
 begin
   SendDebug('-------------------- End DDE Test ------------------------');
 
-  i:={$I %LINENUM%};
-
   If (hConv_>0) Then
   begin
-    SendDebug(i.ToString+' Make sure we don''t have any open connections');
+    log({$I %LINENUM%},' Make sure we don''t have any open connections');
     If DdeDisconnect(hConv_) Then
     begin
-      SendDebug(i.ToString+' DDE Disconnect Success.: '+ IntToHex(DdeInitializeResultCode_Pascal, 8));
+      log({$I %LINENUM%},' DDE Disconnect Success.: '+ IntToHex(DdeInitializeResultCode_Pascal, 8));
     end
     Else
     begin
-      SendDebug(i.ToString+' DDE Disconnect Failure.: '+ IntToHex(DdeInitializeResultCode_Pascal, 8));
+      log({$I %LINENUM%},' DDE Disconnect Failure.: '+ IntToHex(DdeInitializeResultCode_Pascal, 8));
       TranslateError();
     End;
     hConv_ := 0;
@@ -921,13 +871,13 @@ begin
   begin
     If DdeUninitialize(InstId) Then
     begin
-      SendDebug(i.ToString+' DDE Uninitialize Success: '+ IntToHex(DdeInitializeResultCode_Pascal, 8));
-      SendDebug(i.ToString+' InstId: '+ InstId.ToString);
+      log({$I %LINENUM%},' DDE Uninitialize Success: '+ IntToHex(DdeInitializeResultCode_Pascal, 8));
+      log({$I %LINENUM%},' InstId: '+ InstId.ToString);
     end
     Else
     begin
-      SendDebug(i.ToString+' DDE Uninitialize Failure. '+ IntToHex(DdeInitializeResultCode_Pascal, 8));
-      SendDebug(i.ToString+' InstId: '+ InstId.ToString);
+      log({$I %LINENUM%},' DDE Uninitialize Failure. '+ IntToHex(DdeInitializeResultCode_Pascal, 8));
+      log({$I %LINENUM%},' InstId: '+ InstId.ToString);
       TranslateError();
     End;
 
@@ -940,32 +890,31 @@ begin
   DdeFreeStringHandle(InstId, g_hszTopicName);
   DdeFreeStringHandle(InstId, g_hszItemName);
 
-  i:={$I %LINENUM%};
-  SendDebug(i.ToString+'After DdeFreeStringHandle -------------------------');
-  SendDebug(i.ToString+' g_hszAppName: '+ g_hszAppName.ToString);
-  SendDebug(i.ToString+' g_hszTopicName: '+ g_hszTopicName.ToString);
-  SendDebug(i.ToString+' g_hszItemName: '+ g_hszItemName.ToString);
+  log({$I %LINENUM%},'After DdeFreeStringHandle -------------------------');
+  log({$I %LINENUM%},' g_hszAppName: '+ g_hszAppName.ToString);
+  log({$I %LINENUM%},' g_hszTopicName: '+ g_hszTopicName.ToString);
+  log({$I %LINENUM%},' g_hszItemName: '+ g_hszItemName.ToString);
 
-  SendDebug(i.ToString+'Recheck string handles -------------------------');
+  log({$I %LINENUM%},'Recheck string handles -------------------------');
   Length_ := DdeQueryString(InstId, g_hszAppName, Buffer, SizeOf(Buffer), CP_WINANSI);
   if Length_ > 0 then
   begin
     ResultString := string(Buffer);
-    SendDebug(i.ToString+' ResultString g_hszAppName: '+ResultString);
+    log({$I %LINENUM%},' ResultString g_hszAppName: '+ResultString);
   end;
 
   Length_ := DdeQueryString(InstId, g_hszTopicName, Buffer, SizeOf(Buffer), CP_WINANSI);
   if Length_ > 0 then
   begin
     ResultString := string(Buffer);
-    SendDebug(i.ToString+' ResultString g_hszTopicName: '+ResultString);
+    log({$I %LINENUM%},' ResultString g_hszTopicName: '+ResultString);
   end;
 
   Length_ := DdeQueryString(InstId, g_hszItemName, Buffer, SizeOf(Buffer), CP_WINANSI);
   if Length_ > 0 then
   begin
     ResultString := string(Buffer);
-    SendDebug(i.ToString+' ResultString g_hszItemName: '+ResultString);
+    log({$I %LINENUM%},' ResultString g_hszItemName: '+ResultString);
   end;
 end;
 
@@ -975,7 +924,6 @@ var
   s:AnsiString;
 begin
 
-  i:={$I %LINENUM%};
   SendDebug(' DdeAccessData---------------------');
 
   if hDataQUOTE > 0 then
@@ -985,7 +933,7 @@ begin
   end
   else
   begin
-    SendDebug(i.ToString+' ClientTransaction Failed hDataQUOTE: ' + hDataQUOTE.ToString);
+    log({$I %LINENUM%},' ClientTransaction Failed hDataQUOTE: ' + hDataQUOTE.ToString);
   end;
 
 end;
@@ -1003,12 +951,11 @@ var
   sValue : String;
   txtService_ : string;
   txtTopic_ : string;
-  i:integer;
 begin
-  i:={$I %LINENUM%};
+
   If (CheckData('Execute')) Then
   begin
-    SendDebug(i.ToString+'Execute -------------------------');
+    log({$I %LINENUM%},'Execute -------------------------');
     // Load the buffer.
     sValue := txtValue.Text;
 
@@ -1017,13 +964,13 @@ begin
     txtTopic_ := txtTopic.Text;
     DDE_CreateStringHandles(txtService_, txtTopic_);
 
-    SendDebug(i.ToString+'Recheck string handles -------------------------');
+    log({$I %LINENUM%},'Recheck string handles -------------------------');
     Length_ := DdeQueryString(g_lInstID, g_hService, Buffer, SizeOf(Buffer), CP_WINANSI);
     if Length_ > 0 then
     begin
       // ResultString now contains the string value
       ResultString := string(Buffer);
-      SendDebug(i.ToString+' ResultString g_hszAppName: '+ResultString);
+      log({$I %LINENUM%},' ResultString g_hszAppName: '+ResultString);
     end;
 
     Length_ := DdeQueryString(g_lInstID, g_hTopic, Buffer, SizeOf(Buffer), CP_WINANSI);
@@ -1031,7 +978,7 @@ begin
     begin
       // ResultString now contains the string value
       ResultString := string(Buffer);
-      SendDebug(i.ToString+' ResultString g_hszTopicName: '+ResultString);
+      log({$I %LINENUM%},' ResultString g_hszTopicName: '+ResultString);
     end;
 
     Length_ := DdeQueryString(g_lInstID, g_hItem, Buffer, SizeOf(Buffer), CP_WINANSI);
@@ -1039,7 +986,7 @@ begin
     begin
       // ResultString now contains the string value
       ResultString := string(Buffer);
-      SendDebug(i.ToString+' ResultString g_hszItemName: '+ResultString);
+      log({$I %LINENUM%},' ResultString g_hszItemName: '+ResultString);
     end;
 
     // Open the conversation.
@@ -1077,8 +1024,6 @@ begin
 end;
 
 procedure TForm1.cmdInitializeClick(Sender: TObject);
-var
-  i:integer;
 begin
 
   SendDebug('------------------- Begin DDE Test -----------------------');
@@ -1089,17 +1034,15 @@ begin
   DdeInitializeResultCode_VB6:=DdeInitialize(@g_lInstID, @DDECallback, APPCMD_CLIENTONLY Or MF_SENDMSGS Or MF_POSTMSGS, 0);
   if DdeInitializeResultCode_VB6 <> DMLERR_NO_ERROR then
   begin
-    i:={$I %LINENUM%};
-    SendDebug(i.ToString+' DDE Initialize failed! Error code: '+ IntToHex(DdeInitializeResultCode_VB6, 8));
-    SendDebug(i.ToString+' g_lInstID: '+ g_lInstID.ToString);
+    log({$I %LINENUM%},' DDE Initialize failed! Error code: '+ IntToHex(DdeInitializeResultCode_VB6, 8));
+    log({$I %LINENUM%},' g_lInstID: '+ g_lInstID.ToString);
     TranslateError();
     exit;
   end
   Else
   begin
-    i:={$I %LINENUM%};
-    SendDebug(i.ToString+' DDE Initialize Success: '+ IntToHex(DdeInitializeResultCode_VB6, 8));
-    SendDebug(i.ToString+' g_lInstID: '+ g_lInstID.ToString);
+    log({$I %LINENUM%},' DDE Initialize Success: '+ IntToHex(DdeInitializeResultCode_VB6, 8));
+    log({$I %LINENUM%},' g_lInstID: '+ g_lInstID.ToString);
   End;
 
   cboItem.Enabled:=true;
@@ -1181,25 +1124,23 @@ var
   txtService_:string;
   txtTopic_:string;
   txtItem_:string;
-  i:integer;
 begin
   txtService_:=txtService.Text;
   txtTopic_:=txtTopic.Text;
   txtItem_:= txtItem.Text;
-  i:={$I %LINENUM%};
 
   If (CheckData('Request')) Then
   begin
 
     DDE_CreateStringHandles(txtService_, txtTopic_, txtItem_);
 
-    SendDebug(i.ToString+'Recheck string handles -------------------------');
+    log({$I %LINENUM%},'Recheck string handles -------------------------');
     Length_ := DdeQueryString(g_lInstID, g_hService, Buffer, SizeOf(Buffer), CP_WINANSI);
     if Length_ > 0 then
     begin
       // ResultString now contains the string value
       ResultString := string(Buffer);
-      SendDebug(i.ToString+' ResultString g_hszAppName: '+ResultString);
+      log({$I %LINENUM%},' ResultString g_hszAppName: '+ResultString);
     end;
 
     Length_ := DdeQueryString(g_lInstID, g_hTopic, Buffer, SizeOf(Buffer), CP_WINANSI);
@@ -1207,7 +1148,7 @@ begin
     begin
       // ResultString now contains the string value
       ResultString := string(Buffer);
-      SendDebug(i.ToString+' ResultString g_hszTopicName: '+ResultString);
+      log({$I %LINENUM%},' ResultString g_hszTopicName: '+ResultString);
     end;
 
     Length_ := DdeQueryString(g_lInstID, g_hItem, Buffer, SizeOf(Buffer), CP_WINANSI);
@@ -1215,14 +1156,13 @@ begin
     begin
       // ResultString now contains the string value
       ResultString := string(Buffer);
-      SendDebug(i.ToString+' ResultString g_hszItemName: '+ResultString);
+      log({$I %LINENUM%},' ResultString g_hszItemName: '+ResultString);
     end;
 
     // Open the conversation.
     If (g_hDDEConv = 0) Then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+' g_lInstID: '+ g_lInstID.ToString);
+      log({$I %LINENUM%},' g_lInstID: '+ g_lInstID.ToString);
       g_hDDEConv := DDE_Connect();
     End;
 
@@ -1233,8 +1173,7 @@ begin
 
       If (lRet>0) Then
       begin
-        i:={$I %LINENUM%};
-        SendDebug(i.ToString+' (DdeClientTransaction) DDE Request Success.');
+        log({$I %LINENUM%},' (DdeClientTransaction) DDE Request Success.');
 
         // Grab the data from the DDE object create during the transaction. The DDE object
         // is part of the DDE subsystem memory. Once we get what we want we need to free
@@ -1245,16 +1184,16 @@ begin
         // always an extra 3 bytes attached to the end of the string. That's why I have a magic
         // number.
         lSize := DdeGetData(lRet, nil, 0, 0);
-        SendDebug(i.ToString+' lSize: ' + lSize.ToString);
+        log({$I %LINENUM%},' lSize: ' + lSize.ToString);
 
         // Allocate a buffer for the return data.
         //sBuffer := StringOfChar(chr(0), lSize); //sBuffer := String$(lSize, 0);
         SetLength(sBuffer, lSize);
-        SendDebug(i.ToString+' Length(sBuffer): ' + Length(sBuffer).ToString);
+        log({$I %LINENUM%},' Length(sBuffer): ' + Length(sBuffer).ToString);
 
         // Grab the data.
         lSize := DdeGetData(lRet, @sBuffer[0], Length(sBuffer), 0);
-        SendDebug(i.ToString+' lSize: ' + lSize.ToString);
+        log({$I %LINENUM%},' lSize: ' + lSize.ToString);
 
         SetString(sFinal, PAnsiChar(@sBuffer[0]), Length(sBuffer));
         Label1.caption := 'DDE data: '+string(sFinal);
@@ -1265,8 +1204,7 @@ begin
       end
       Else
       begin
-        i:={$I %LINENUM%};
-        SendDebug(i.ToString+' (DdeClientTransaction) DDE Request Failed');
+        log({$I %LINENUM%},' (DdeClientTransaction) DDE Request Failed');
         TranslateError();
       End;
     End;
@@ -1355,8 +1293,6 @@ begin
 end;
 
 procedure TForm1.cmdUninitializeClick(Sender: TObject);
-var
-  i:integer;
 begin
 
   If (g_hDDEConv <> 0) Then
@@ -1370,15 +1306,13 @@ begin
   begin
     If DdeUninitialize(g_lInstID) Then
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+' DDE Uninitialize Success: '+ IntToHex(DdeInitializeResultCode_VB6, 8));
-      SendDebug(i.ToString+' g_lInstID: '+ g_lInstID.ToString);
+      log({$I %LINENUM%},' DDE Uninitialize Success: '+ IntToHex(DdeInitializeResultCode_VB6, 8));
+      log({$I %LINENUM%},' g_lInstID: '+ g_lInstID.ToString);
     end
     Else
     begin
-      i:={$I %LINENUM%};
-      SendDebug(i.ToString+' DDE Uninitialize Failure. '+ IntToHex(DdeInitializeResultCode_VB6, 8));
-      SendDebug(i.ToString+' g_lInstID: '+ g_lInstID.ToString);
+      log({$I %LINENUM%},' DDE Uninitialize Failure. '+ IntToHex(DdeInitializeResultCode_VB6, 8));
+      log({$I %LINENUM%},' g_lInstID: '+ g_lInstID.ToString);
       TranslateError();
     End;
 

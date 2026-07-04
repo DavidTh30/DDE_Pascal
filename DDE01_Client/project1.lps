@@ -53,8 +53,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="531"/>
-        <CursorPos X="65" Y="542"/>
+        <TopLine Value="377"/>
+        <CursorPos Y="263"/>
         <UsageCount Value="85"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -189,26 +189,6 @@
     <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="740" Column="28" TopLine="725"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="748" Column="56" TopLine="737"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="535" Column="30" TopLine="518"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="725" Column="30" TopLine="697"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="740" Column="28" TopLine="719"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
         <Caret Line="748" Column="28" TopLine="729"/>
       </Position>
       <Position>
@@ -306,6 +286,26 @@
       <Position>
         <Filename Value="unit1.pas"/>
         <Caret Line="542" Column="65" TopLine="531"/>
+      </Position>
+      <Position>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="421" TopLine="409"/>
+      </Position>
+      <Position>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="444" Column="26" TopLine="445"/>
+      </Position>
+      <Position>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="532" Column="28" TopLine="517"/>
+      </Position>
+      <Position>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="991" Column="26" TopLine="983"/>
+      </Position>
+      <Position>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="1210" Column="28" TopLine="1199"/>
       </Position>
     </JumpHistory>
     <RunParams>
