@@ -1,0 +1,98 @@
+object Form1: TForm1
+  Left = 427
+  Height = 240
+  Top = 145
+  Width = 494
+  Caption = 'Form1'
+  ClientHeight = 240
+  ClientWidth = 494
+  LCLVersion = '4.4.0.0'
+  object cmdDdeInitialize: TButton
+    Left = 8
+    Height = 23
+    Top = 24
+    Width = 144
+    Caption = 'DdeInitialize'
+    TabOrder = 0
+    OnClick = cmdDdeInitializeClick
+  end
+  object cmdDdeCreateStringHandle: TButton
+    Left = 8
+    Height = 23
+    Top = 48
+    Width = 144
+    Caption = 'DdeCreateStringHandle'
+    TabOrder = 1
+    OnClick = cmdDdeCreateStringHandleClick
+  end
+  object Label1: TLabel
+    Left = 160
+    Height = 15
+    Top = 32
+    Width = 86
+    Caption = 'g_hszAppName:'
+  end
+  object txtService1: TEdit
+    Left = 260
+    Height = 23
+    Top = 24
+    Width = 104
+    TabOrder = 2
+    Text = 'g_hszAppName'
+  end
+  object Label2: TLabel
+    Left = 160
+    Height = 15
+    Top = 56
+    Width = 92
+    Caption = 'g_hszTopicName:'
+  end
+  object txtTopic1: TEdit
+    Left = 260
+    Height = 23
+    Top = 48
+    Width = 104
+    TabOrder = 3
+    Text = 'g_hszTopicName'
+  end
+  object Label3: TLabel
+    Left = 160
+    Height = 15
+    Top = 80
+    Width = 88
+    Caption = 'g_hszItemName:'
+  end
+  object txtItem1: TEdit
+    Left = 260
+    Height = 23
+    Top = 72
+    Width = 104
+    TabOrder = 4
+    Text = 'g_hszItemName'
+  end
+  object CheckBox1: TCheckBox
+    Left = 53
+    Height = 19
+    Top = 114
+    Width = 138
+    Caption = 'uFmt / uType message'
+    TabOrder = 5
+  end
+  object CheckBox2: TCheckBox
+    Left = 53
+    Height = 19
+    Top = 144
+    Width = 153
+    Caption = 'XTYP_MONITOR message'
+    TabOrder = 6
+  end
+  object cmdUninitialize: TButton
+    Left = 112
+    Height = 23
+    Top = 176
+    Width = 144
+    Caption = 'Uninitialize'
+    TabOrder = 7
+    OnClick = cmdUninitializeClick
+  end
+end
