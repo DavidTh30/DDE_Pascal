@@ -13,11 +13,14 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
+    cmdMeasureSizeArrayOfByte: TButton;
     cmdDdeInitialize: TButton;
     cmdDdeCreateStringHandle: TButton;
+    cmdMeasureSizeArrayOfAnsiChar: TButton;
     cmdUninitialize: TButton;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
+    Memo1: TMemo;
     txtService1: TEdit;
     txtTopic1: TEdit;
     txtItem1: TEdit;
@@ -26,6 +29,8 @@ type
     Label3: TLabel;
     procedure cmdDdeCreateStringHandleClick(Sender: TObject);
     procedure cmdDdeInitializeClick(Sender: TObject);
+    procedure cmdMeasureSizeArrayOfAnsiCharClick(Sender: TObject);
+    procedure cmdMeasureSizeArrayOfByteClick(Sender: TObject);
     procedure cmdUninitializeClick(Sender: TObject);
   private
 
@@ -92,6 +97,11 @@ End;
 procedure log(LINENUM_: integer; message_: string);
 begin
   SendDebug(LINENUM_.ToString+message_);
+end;
+
+procedure log2(LINENUM_: integer; message_: string);
+begin
+  Form1.Memo1.Append(LINENUM_.ToString+message_);
 end;
 
 // DDE Callback function
@@ -217,11 +227,18 @@ end;
 procedure TForm1.cmdDdeCreateStringHandleClick(Sender: TObject);
 begin
   if (DdeInitializeResultCode = DMLERR_NO_ERROR) and (InstId>0) then
-   begin
-     g_hszAppName := DdeCreateStringHandle(InstId, PAnsiChar(txtService1.Text), CP_WINANSI);
-     g_hszTopicName := DdeCreateStringHandle(InstId, PAnsiChar(txtTopic1.Text), CP_WINANSI);
-     g_hszItemName := DdeCreateStringHandle(InstId, PAnsiChar(txtItem1.Text), CP_WINANSI);
-   end
+  begin
+    g_hszAppName := DdeCreateStringHandle(InstId, PAnsiChar(txtService1.Text), CP_WINANSI);
+    g_hszTopicName := DdeCreateStringHandle(InstId, PAnsiChar(txtTopic1.Text), CP_WINANSI);
+    g_hszItemName := DdeCreateStringHandle(InstId, PAnsiChar(txtItem1.Text), CP_WINANSI);
+    log({$I %LINENUM%},'DdeCreateStringHandle Success  g_hszAppName: '+IntToHex(g_hszAppName, 8));
+  end
+  else
+  begin
+    log({$I %LINENUM%},'DDE Not Initialize  DdeInitializeResultCode: '+ DdeInitializeResultCode.ToString);
+    log({$I %LINENUM%},'DDE Not Initialize  InstId: '+ InstId.ToString);
+  end;
+
 end;
 
 procedure TForm1.cmdDdeInitializeClick(Sender: TObject);
@@ -235,8 +252,103 @@ begin
     APPCLASS_STANDARD or APPCMD_CLIENTONLY,     //APPCLASS_STANDARD APPCMD_CLIENTONLY  APPCMD_TARGETONLY  CBF_FAIL_ALLSVRXACTIONS
     0
     );
-
+    if (DdeInitializeResultCode = DMLERR_NO_ERROR) and (InstId>0) then
+    begin
+      log({$I %LINENUM%},' DDE Initialize Success  InstId: '+ IntToHex(InstId, 8));
+    end
+    else
+    begin
+      log({$I %LINENUM%},' DDE Initialize Failure  DdeInitializeResultCode: '+ DdeInitializeResultCode.ToString);
+      TranslateError();
+    end ;
+  end
+  else
+  begin
+    log2({$I %LINENUM%},' DDE already initialize  InstId: '+ IntToHex(InstId, 8));
   end;
+end;
+
+procedure TForm1.cmdMeasureSizeArrayOfAnsiCharClick(Sender: TObject);
+var
+  Length_: DWORD;
+  Buffer: array of AnsiChar;
+  AnsiStr: AnsiString;
+  s:string;
+begin
+
+  log2({$I %LINENUM%},' Measure Size Array Of AnsiChar -------------------------');
+  Length_:=40;
+  log2({$I %LINENUM%},' Length_: '+Length_.ToString);
+  SetLength(Buffer, Length_);
+  log2({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString+'  OK');
+  log2({$I %LINENUM%},' SizeOf(Buffer): '+SizeOf(Buffer).ToString+'  Wrong!');
+  log2({$I %LINENUM%},' SizeOf use for a static array');
+
+  log2({$I %LINENUM%},' Measure Size Of g_hszAppName -------------------------');
+  Length_ := DdeQueryString(InstId, g_hszAppName, nil, 0, CP_WINANSI);
+  log2({$I %LINENUM%},' g_hszAppName Length_: '+Length_.ToString);
+
+  if Length_ > 0 then
+  begin
+    //FillChar(Buffer, Length(Buffer) * SizeOf(AnsiChar), 0);  //not work with FPC
+    SetLength(Buffer, 0); // Resets all elements to 0
+    SetLength(Buffer, Length_+1);
+    log2({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString);
+    Length_ := DdeQueryString(InstId, g_hszAppName, @Buffer[0], Length(Buffer), CP_WINANSI);
+    log2({$I %LINENUM%},' DdeQueryString Length_: '+Length_.ToString);
+    log2({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString);
+
+    SetString(AnsiStr, PAnsiChar(@Buffer[0]), Length(Buffer));
+    s := string(AnsiStr);
+    log2({$I %LINENUM%},' ResultString s: '+s);
+  end
+  else
+  begin
+    log2({$I %LINENUM%},' String handle not create');
+  end;
+
+  SetLength(Buffer, 0);  // Free/Clean up memory
+end;
+
+procedure TForm1.cmdMeasureSizeArrayOfByteClick(Sender: TObject);
+var
+  Length_: DWORD;
+  Buffer: array of Byte;
+  AnsiStr: AnsiString;
+  s:string;
+begin
+
+    log2({$I %LINENUM%},' Measure Size Array Of Byte -------------------------');
+    Length_:=40;
+    log2({$I %LINENUM%},' Length_: '+Length_.ToString);
+    SetLength(Buffer, Length_);
+    log2({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString+'  OK');
+    log2({$I %LINENUM%},' SizeOf(Buffer): '+SizeOf(Buffer).ToString+'  Wrong!');
+    log2({$I %LINENUM%},' SizeOf use for a static array');
+
+    log2({$I %LINENUM%},' Measure Size Of g_hszAppName -------------------------');
+    Length_ := DdeQueryString(InstId, g_hszAppName, nil, 0, CP_WINANSI);
+    log2({$I %LINENUM%},' g_hszAppName Length_: '+Length_.ToString);
+
+    if Length_ > 0 then
+    begin
+      Buffer:= Default(TByteArray); // Resets all elements to 0
+      SetLength(Buffer, Length_+1);
+      log2({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString);
+      Length_ := DdeQueryString(InstId, g_hszAppName, @Buffer[0], Length(Buffer), CP_WINANSI);
+      log2({$I %LINENUM%},' DdeQueryString Length_: '+Length_.ToString);
+      log2({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString);
+
+      SetString(AnsiStr, PAnsiChar(@Buffer[0]), Length(Buffer));
+      s := string(AnsiStr);
+      log2({$I %LINENUM%},' ResultString s: '+s);
+    end
+    else
+    begin
+      log2({$I %LINENUM%},' String handle not create');
+    end;
+
+    SetLength(Buffer, 0); // Free/Clean up memory
 end;
 
 procedure TForm1.cmdUninitializeClick(Sender: TObject);
@@ -259,6 +371,9 @@ begin
     InstId := 0;
   End;
 
+  DdeFreeStringHandle(InstId, g_hszAppName);
+  DdeFreeStringHandle(InstId, g_hszTopicName);
+  DdeFreeStringHandle(InstId, g_hszItemName);
   SendDebug('-------------------- End DDE Test ------------------------');
 
 
