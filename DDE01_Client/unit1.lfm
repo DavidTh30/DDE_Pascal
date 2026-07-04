@@ -1,0 +1,299 @@
+object Form1: TForm1
+  Left = 591
+  Height = 250
+  Top = 140
+  Width = 751
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
+  Caption = 'Client DDE'
+  ClientHeight = 250
+  ClientWidth = 751
+  OnCreate = FormCreate
+  LCLVersion = '3.4.0.0'
+  object Label1: TLabel
+    Left = 608
+    Height = 15
+    Top = 112
+    Width = 51
+    Caption = 'DDE data:'
+  end
+  object cboItem: TComboBox
+    Left = 88
+    Height = 23
+    Top = 24
+    Width = 127
+    Enabled = False
+    ItemHeight = 15
+    ItemIndex = 0
+    Items.Strings = (
+      '<None>'
+      'Advise'
+      'Request'
+      'Poke'
+    )
+    TabOrder = 0
+    Text = '<None>'
+    OnEditingDone = cboItemEditingDone
+  end
+  object cmdExecute: TButton
+    Left = 235
+    Height = 23
+    Top = 24
+    Width = 86
+    Caption = 'Execute'
+    Enabled = False
+    TabOrder = 1
+    OnClick = cmdExecuteClick
+  end
+  object cmdStartAdv: TButton
+    Left = 235
+    Height = 23
+    Top = 48
+    Width = 86
+    Caption = 'StartAdv'
+    Enabled = False
+    TabOrder = 2
+    OnClick = cmdStartAdvClick
+  end
+  object cmdStopAdv: TButton
+    Left = 235
+    Height = 23
+    Top = 72
+    Width = 86
+    Caption = 'StopAdv'
+    Enabled = False
+    TabOrder = 3
+    OnClick = cmdStopAdvClick
+  end
+  object cmdRequest: TButton
+    Left = 235
+    Height = 23
+    Top = 96
+    Width = 86
+    Caption = 'Request'
+    Enabled = False
+    TabOrder = 4
+    OnClick = cmdRequestClick
+  end
+  object cmdPoke: TButton
+    Left = 235
+    Height = 23
+    Top = 120
+    Width = 86
+    Caption = 'Poke'
+    Enabled = False
+    TabOrder = 5
+    OnClick = cmdPokeClick
+  end
+  object cmdInitialize: TButton
+    Left = 336
+    Height = 23
+    Top = 24
+    Width = 86
+    Caption = 'Initialize'
+    TabOrder = 6
+    OnClick = cmdInitializeClick
+  end
+  object cmdUninitialize: TButton
+    Left = 336
+    Height = 23
+    Top = 48
+    Width = 86
+    Caption = 'Uninitialize'
+    Enabled = False
+    TabOrder = 7
+    OnClick = cmdUninitializeClick
+  end
+  object cmdClear: TButton
+    Left = 336
+    Height = 23
+    Top = 72
+    Width = 86
+    Caption = 'Clear'
+    Enabled = False
+    TabOrder = 8
+    OnClick = cmdClearClick
+  end
+  object txtValue: TEdit
+    Left = 608
+    Height = 23
+    Top = 184
+    Width = 127
+    TabOrder = 9
+    Text = 'txtValue'
+  end
+  object txtService: TEdit
+    Left = 88
+    Height = 23
+    Top = 56
+    Width = 127
+    TabOrder = 10
+    Text = 'txtService'
+  end
+  object txtTopic: TEdit
+    Left = 88
+    Height = 23
+    Top = 80
+    Width = 127
+    TabOrder = 11
+    Text = 'txtTopic'
+  end
+  object Label2: TLabel
+    Left = 24
+    Height = 15
+    Top = 64
+    Width = 40
+    Caption = 'Service:'
+  end
+  object Label3: TLabel
+    Left = 24
+    Height = 15
+    Top = 88
+    Width = 31
+    Caption = 'Topic:'
+  end
+  object Button2: TButton
+    Left = 480
+    Height = 23
+    Top = 24
+    Width = 120
+    Caption = 'Initialize'
+    TabOrder = 12
+    OnClick = Button2Click
+  end
+  object Button3: TButton
+    Left = 480
+    Height = 23
+    Top = 48
+    Width = 120
+    Caption = 'Topic to memory'
+    TabOrder = 13
+    OnClick = Button3Click
+  end
+  object Button4: TButton
+    Left = 480
+    Height = 23
+    Top = 72
+    Width = 120
+    Caption = 'Connect'
+    TabOrder = 14
+    OnClick = Button4Click
+  end
+  object Button5: TButton
+    Left = 480
+    Height = 23
+    Top = 104
+    Width = 120
+    Caption = 'Transaction Request'
+    TabOrder = 15
+    OnClick = Button5Click
+  end
+  object txtItem1: TEdit
+    Left = 608
+    Height = 23
+    Top = 72
+    Width = 127
+    TabOrder = 16
+    Text = 'MyItem'
+  end
+  object txtService1: TEdit
+    Left = 608
+    Height = 23
+    Top = 24
+    Width = 127
+    TabOrder = 17
+    Text = 'MyServerApp'
+  end
+  object txtTopic1: TEdit
+    Left = 608
+    Height = 23
+    Top = 48
+    Width = 127
+    TabOrder = 18
+    Text = 'MyTopic'
+  end
+  object Button6: TButton
+    Left = 480
+    Height = 23
+    Top = 128
+    Width = 120
+    Caption = 'DdeGetData'
+    TabOrder = 19
+    OnClick = Button6Click
+  end
+  object txtItem: TEdit
+    Left = 88
+    Height = 23
+    Top = 104
+    Width = 127
+    TabOrder = 20
+    Text = 'MyItem'
+  end
+  object Button7: TButton
+    Left = 480
+    Height = 23
+    Top = 216
+    Width = 120
+    Caption = 'Uninitialize'
+    TabOrder = 21
+    OnClick = Button7Click
+  end
+  object Button9: TButton
+    Left = 608
+    Height = 23
+    Top = 128
+    Width = 111
+    Caption = 'DdeAccessData'
+    TabOrder = 22
+    OnClick = Button9Click
+  end
+  object Button10: TButton
+    Left = 480
+    Height = 23
+    Top = 160
+    Width = 120
+    Caption = 'Transaction POKE'
+    TabOrder = 23
+    OnClick = Button10Click
+  end
+  object Button11: TButton
+    Left = 480
+    Height = 23
+    Top = 184
+    Width = 120
+    Caption = 'DdeAddData'
+    TabOrder = 24
+    OnClick = Button11Click
+  end
+  object Label4: TLabel
+    Left = 24
+    Height = 15
+    Top = 112
+    Width = 27
+    Caption = 'Item:'
+  end
+  object CheckBox1: TCheckBox
+    Left = 56
+    Height = 19
+    Top = 168
+    Width = 121
+    Caption = 'Detect uType, uFmt'
+    TabOrder = 25
+  end
+  object CheckBox2: TCheckBox
+    Left = 57
+    Height = 19
+    Top = 198
+    Width = 141
+    Caption = 'Detect XTYP_MONITOR'
+    TabOrder = 26
+  end
+  object Shape1: TShape
+    Left = 440
+    Height = 223
+    Top = 19
+    Width = 4
+    Brush.Color = clScrollBar
+    Pen.Color = clGray
+  end
+end
