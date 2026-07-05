@@ -14,6 +14,7 @@ type
 
   TForm1 = class(TForm)
     cmdConnect: TButton;
+    cmdMeasureSizeString: TButton;
     cmdMeasureSizeArrayOfByte: TButton;
     cmdDdeInitialize: TButton;
     cmdDdeCreateStringHandle: TButton;
@@ -34,6 +35,7 @@ type
     procedure cmdDdeInitializeClick(Sender: TObject);
     procedure cmdMeasureSizeArrayOfAnsiCharClick(Sender: TObject);
     procedure cmdMeasureSizeArrayOfByteClick(Sender: TObject);
+    procedure cmdMeasureSizeStringClick(Sender: TObject);
     procedure cmdUninitializeClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
@@ -378,6 +380,44 @@ begin
     end;
 
     SetLength(Buffer, 0); // Free/Clean up memory
+end;
+
+procedure TForm1.cmdMeasureSizeStringClick(Sender: TObject);
+var
+  Length_: DWORD;
+  Buffer: array of AnsiChar;
+  AnsiStr: AnsiString;
+  s:string;
+begin
+  log2({$I %LINENUM%},' Measure Size Array Of AnsiChar -------------------------');
+  Length_:=40;
+  log2({$I %LINENUM%},' Length_: '+Length_.ToString);
+  SetLength(AnsiStr, Length_);
+  log2({$I %LINENUM%},' Length(AnsiStr): '+Length(AnsiStr).ToString+'  OK');
+  log2({$I %LINENUM%},' SizeOf(AnsiStr): '+SizeOf(AnsiStr).ToString+'  Wrong!');
+
+  log2({$I %LINENUM%},' Measure Size Of g_hszAppName -------------------------');
+  Length_ := DdeQueryString(InstId, g_hszAppName, nil, 0, CP_WINANSI);
+  log2({$I %LINENUM%},' g_hszAppName Length_: '+Length_.ToString);
+
+  if Length_ > 0 then
+  begin
+    SetLength(AnsiStr, 0); // Resets all elements to 0
+    SetLength(AnsiStr, Length_+1);
+    log2({$I %LINENUM%},' Length(AnsiStr): '+Length(AnsiStr).ToString);
+    Length_ := DdeQueryString(InstId, g_hszAppName, PAnsiChar(AnsiStr), Length(AnsiStr), CP_WINANSI);
+    log2({$I %LINENUM%},' DdeQueryString Length_: '+Length_.ToString);
+    log2({$I %LINENUM%},' Length(AnsiStr): '+Length(AnsiStr).ToString);
+
+    s := string(AnsiStr);
+    log2({$I %LINENUM%},' ResultString s: '+s);
+  end
+  else
+  begin
+    log2({$I %LINENUM%},' String handle not create');
+  end;
+
+  SetLength(AnsiStr, 0);  // Free/Clean up memory
 end;
 
 procedure TForm1.cmdUninitializeClick(Sender: TObject);
