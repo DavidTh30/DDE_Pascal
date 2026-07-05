@@ -1,0 +1,168 @@
+object Form1: TForm1
+  Left = 405
+  Height = 202
+  Top = 118
+  Width = 559
+  Caption = 'Server DDE'
+  ClientHeight = 202
+  ClientWidth = 559
+  LCLVersion = '4.4.0.0'
+  OnCreate = FormCreate
+  object Label2: TLabel
+    Left = 208
+    Height = 15
+    Top = 48
+    Width = 40
+    Caption = 'Service:'
+  end
+  object Label3: TLabel
+    Left = 208
+    Height = 15
+    Top = 72
+    Width = 31
+    Caption = 'Topic:'
+  end
+  object Label4: TLabel
+    Left = 208
+    Height = 15
+    Top = 96
+    Width = 27
+    Caption = 'Item:'
+  end
+  object txtService: TEdit
+    Left = 272
+    Height = 23
+    Top = 40
+    Width = 127
+    TabOrder = 0
+    Text = 'txtService'
+  end
+  object txtTopic: TEdit
+    Left = 272
+    Height = 23
+    Top = 64
+    Width = 127
+    TabOrder = 1
+    Text = 'txtTopic'
+  end
+  object txtItem: TEdit
+    Left = 272
+    Height = 23
+    Top = 88
+    Width = 127
+    TabOrder = 2
+    Text = 'MyItem'
+    OnChange = txtItemChange
+  end
+  object cmdAdvise: TButton
+    Left = 416
+    Height = 23
+    Top = 72
+    Width = 120
+    Caption = 'Post Advise'
+    TabOrder = 3
+    OnClick = cmdAdviseClick
+  end
+  object cmdDdeInitialize: TButton
+    Left = 8
+    Height = 23
+    Top = 8
+    Width = 168
+    Caption = 'DdeInitialize'
+    TabOrder = 4
+    OnClick = cmdDdeInitializeClick
+  end
+  object CheckBox1: TCheckBox
+    Left = 8
+    Height = 19
+    Top = 40
+    Width = 138
+    Caption = 'uFmt / uType message'
+    TabOrder = 5
+  end
+  object CheckBox2: TCheckBox
+    Left = 8
+    Height = 19
+    Top = 64
+    Width = 153
+    Caption = 'XTYP_MONITOR message'
+    TabOrder = 6
+  end
+  object Label1: TLabel
+    Left = 416
+    Height = 15
+    Top = 48
+    Width = 51
+    Caption = 'DDE data:'
+  end
+  object cmdUninitialize: TButton
+    Left = 8
+    Height = 23
+    Top = 168
+    Width = 168
+    Caption = 'Uninitialize'
+    TabOrder = 7
+    OnClick = cmdUninitializeClick
+  end
+  object cmdDdeCreateStringHandle: TButton
+    Left = 8
+    Height = 23
+    Top = 88
+    Width = 168
+    Caption = 'DdeCreateStringHandle'
+    TabOrder = 8
+    OnClick = cmdDdeCreateStringHandleClick
+  end
+  object txtAdvise: TEdit
+    Left = 272
+    Height = 23
+    Top = 112
+    Width = 127
+    TabOrder = 9
+    Text = 'MyAdvise'
+    OnChange = txtItemChange
+  end
+  object Label5: TLabel
+    Left = 208
+    Height = 15
+    Top = 120
+    Width = 38
+    Caption = 'Advise:'
+  end
+  object cmdCheckConversation: TButton
+    Left = 8
+    Height = 23
+    Top = 112
+    Width = 168
+    Caption = 'Check conversation'
+    TabOrder = 10
+    OnClick = cmdCheckConversationClick
+  end
+  object cmdCreateServiceName: TButton
+    Left = 8
+    Height = 23
+    Top = 136
+    Width = 168
+    Caption = 'Create Service Name'
+    TabOrder = 11
+    OnClick = cmdCreateServiceNameClick
+  end
+  object cmdMeasureSizeString: TButton
+    Left = 208
+    Height = 23
+    Top = 144
+    Width = 168
+    Caption = 'DdeQueryString [String]'
+    TabOrder = 12
+    OnClick = cmdMeasureSizeStringClick
+  end
+  object cmdDisconnectConversation: TButton
+    Left = 208
+    Height = 23
+    Top = 168
+    Width = 168
+    Caption = 'Disconnect conversation'
+    TabOrder = 13
+    OnClick = cmdDisconnectConversationClick
+  end
+end
