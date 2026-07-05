@@ -13,6 +13,7 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
+    cmdConnect: TButton;
     cmdMeasureSizeArrayOfByte: TButton;
     cmdDdeInitialize: TButton;
     cmdDdeCreateStringHandle: TButton;
@@ -20,6 +21,7 @@ type
     cmdUninitialize: TButton;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
+    Label4: TLabel;
     Memo1: TMemo;
     txtService1: TEdit;
     txtTopic1: TEdit;
@@ -27,11 +29,13 @@ type
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    procedure cmdConnectClick(Sender: TObject);
     procedure cmdDdeCreateStringHandleClick(Sender: TObject);
     procedure cmdDdeInitializeClick(Sender: TObject);
     procedure cmdMeasureSizeArrayOfAnsiCharClick(Sender: TObject);
     procedure cmdMeasureSizeArrayOfByteClick(Sender: TObject);
     procedure cmdUninitializeClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
 
   public
@@ -57,6 +61,7 @@ var
   InstId: DWORD;
   DdeInitializeResultCode: UINT;
   g_hszAppName, g_hszTopicName, g_hszItemName: HSZ;
+  hConv_: HCONV;
 implementation
 
 {$R *.lfm}
@@ -236,7 +241,31 @@ begin
   else
   begin
     log({$I %LINENUM%},'DDE Not Initialize  DdeInitializeResultCode: '+ DdeInitializeResultCode.ToString);
-    log({$I %LINENUM%},'DDE Not Initialize  InstId: '+ InstId.ToString);
+    log({$I %LINENUM%},'DDE Not Initialize  InstId: '+ IntToHex(InstId, 8));
+  end;
+
+end;
+
+procedure TForm1.cmdConnectClick(Sender: TObject);
+begin
+
+  If (InstId>0) Then
+  begin
+    log({$I %LINENUM%},' Open the conversation/connect ----------------');
+    hConv_ := DdeConnect(InstId, g_hszAppName, g_hszTopicName, nil);
+    if hConv_ > 0 then
+    begin
+      log({$I %LINENUM%},' Connected Success hConv: '+IntToHex(hConv_, 8));
+    end
+    else
+    begin
+      log({$I %LINENUM%},' Connect failed hConv: '+IntToHex(hConv_, 8));
+      TranslateError();
+    end;
+  end
+  else
+  begin
+      log({$I %LINENUM%},'DDE Not Initialize  InstId: '+ IntToHex(InstId, 8));
   end;
 
 end;
@@ -353,9 +382,31 @@ end;
 
 procedure TForm1.cmdUninitializeClick(Sender: TObject);
 begin
+  if hConv_ > 0 then
+  begin
+    If DdeDisconnect(hConv_) Then
+    begin
+      log({$I %LINENUM%},' DDE Disconnect Success.  hConv_: '+ IntToHex(hConv_, 8));
+    end
+    Else
+    begin
+      log({$I %LINENUM%},' DDE Disconnect Failure.  hConv_: '+ IntToHex(hConv_, 8));
+      TranslateError();
+    End;
+    hConv_ := 0;
+  end
+  else
+  begin
+    log({$I %LINENUM%},'DDE Not Initialize  InstId: '+ IntToHex(InstId, 8));
+  end;
 
   If (InstId>0) Then
   begin
+    log({$I %LINENUM%},' Dde Free all String Handle');
+    DdeFreeStringHandle(InstId, g_hszAppName);
+    DdeFreeStringHandle(InstId, g_hszTopicName);
+    DdeFreeStringHandle(InstId, g_hszItemName);
+
     If DdeUninitialize(InstId) Then
     begin
       log({$I %LINENUM%},' DDE Uninitialize Success: '+ IntToHex(DdeInitializeResultCode, 8));
@@ -364,19 +415,26 @@ begin
     Else
     begin
       log({$I %LINENUM%},' DDE Uninitialize Failure. '+ IntToHex(DdeInitializeResultCode, 8));
-      log({$I %LINENUM%},' InstId: '+ InstId.ToString);
+      log({$I %LINENUM%},' InstId: '+ IntToHex(hConv_, 8));
       TranslateError();
     End;
 
     InstId := 0;
-  End;
+  End
+  else
+  begin
+      log({$I %LINENUM%},' Dde not Initialize yet');
+  end;
 
-  DdeFreeStringHandle(InstId, g_hszAppName);
-  DdeFreeStringHandle(InstId, g_hszTopicName);
-  DdeFreeStringHandle(InstId, g_hszItemName);
   SendDebug('-------------------- End DDE Test ------------------------');
 
 
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  InstId:=0;
+  hConv_:=0;
 end;
 
 end.

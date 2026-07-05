@@ -1,19 +1,20 @@
 object Form1: TForm1
-  Left = 427
+  Left = 495
   Height = 360
-  Top = 145
+  Top = 103
   Width = 740
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'DdeCreateStringHandle with Array'
   ClientHeight = 360
   ClientWidth = 740
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '4.4.0.0'
+  OnCreate = FormCreate
   object cmdDdeInitialize: TButton
     Left = 8
     Height = 23
-    Top = 24
-    Width = 144
+    Top = 64
+    Width = 168
     Caption = 'DdeInitialize'
     TabOrder = 0
     OnClick = cmdDdeInitializeClick
@@ -21,8 +22,8 @@ object Form1: TForm1
   object cmdDdeCreateStringHandle: TButton
     Left = 8
     Height = 23
-    Top = 112
-    Width = 144
+    Top = 152
+    Width = 168
     Caption = 'DdeCreateStringHandle'
     TabOrder = 1
     OnClick = cmdDdeCreateStringHandleClick
@@ -30,14 +31,14 @@ object Form1: TForm1
   object Label1: TLabel
     Left = 8
     Height = 15
-    Top = 184
+    Top = 256
     Width = 86
     Caption = 'g_hszAppName:'
   end
   object txtService1: TEdit
     Left = 108
     Height = 23
-    Top = 176
+    Top = 248
     Width = 104
     TabOrder = 2
     Text = 'g_hszAppName'
@@ -45,14 +46,14 @@ object Form1: TForm1
   object Label2: TLabel
     Left = 8
     Height = 15
-    Top = 208
+    Top = 280
     Width = 92
     Caption = 'g_hszTopicName:'
   end
   object txtTopic1: TEdit
     Left = 108
     Height = 23
-    Top = 200
+    Top = 272
     Width = 104
     TabOrder = 3
     Text = 'g_hszTopicName'
@@ -60,14 +61,14 @@ object Form1: TForm1
   object Label3: TLabel
     Left = 8
     Height = 15
-    Top = 232
+    Top = 304
     Width = 88
     Caption = 'g_hszItemName:'
   end
   object txtItem1: TEdit
     Left = 108
     Height = 23
-    Top = 224
+    Top = 296
     Width = 104
     TabOrder = 4
     Text = 'g_hszItemName'
@@ -75,7 +76,7 @@ object Form1: TForm1
   object CheckBox1: TCheckBox
     Left = 8
     Height = 19
-    Top = 56
+    Top = 96
     Width = 138
     Caption = 'uFmt / uType message'
     TabOrder = 5
@@ -83,7 +84,7 @@ object Form1: TForm1
   object CheckBox2: TCheckBox
     Left = 8
     Height = 19
-    Top = 80
+    Top = 120
     Width = 153
     Caption = 'XTYP_MONITOR message'
     TabOrder = 6
@@ -91,17 +92,17 @@ object Form1: TForm1
   object cmdUninitialize: TButton
     Left = 8
     Height = 23
-    Top = 136
-    Width = 144
+    Top = 208
+    Width = 168
     Caption = 'Uninitialize'
     TabOrder = 7
     OnClick = cmdUninitializeClick
   end
   object cmdMeasureSizeArrayOfByte: TButton
-    Left = 224
+    Left = 200
     Height = 23
-    Top = 24
-    Width = 144
+    Top = 64
+    Width = 168
     Caption = 'MeasureSize [Byte]'
     TabOrder = 8
     OnClick = cmdMeasureSizeArrayOfByteClick
@@ -122,12 +123,28 @@ object Form1: TForm1
     WordWrap = False
   end
   object cmdMeasureSizeArrayOfAnsiChar: TButton
-    Left = 224
+    Left = 200
     Height = 23
-    Top = 56
-    Width = 144
+    Top = 96
+    Width = 168
     Caption = 'MeasureSize [AnsiChar]'
     TabOrder = 10
     OnClick = cmdMeasureSizeArrayOfAnsiCharClick
+  end
+  object cmdConnect: TButton
+    Left = 8
+    Height = 23
+    Top = 176
+    Width = 168
+    Caption = 'Connect/Open conversation'
+    TabOrder = 11
+    OnClick = cmdConnectClick
+  end
+  object Label4: TLabel
+    Left = 8
+    Height = 45
+    Top = 8
+    Width = 251
+    Caption = 'To see all debug message:'#13#10'Please run Debugserver or Debug message view'#13#10'Is in Lazarus tool folder'
   end
 end
