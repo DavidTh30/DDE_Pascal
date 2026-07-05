@@ -5,7 +5,7 @@ object Form1: TForm1
   Width = 740
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = 'DdeCreateStringHandle with Array'
+  Caption = 'DdeQueryString with Array'
   ClientHeight = 360
   ClientWidth = 740
   LCLVersion = '4.4.0.0'
@@ -103,7 +103,7 @@ object Form1: TForm1
     Height = 23
     Top = 64
     Width = 168
-    Caption = 'MeasureSize [Byte]'
+    Caption = 'DdeQueryString [Byte]'
     TabOrder = 8
     OnClick = cmdMeasureSizeArrayOfByteClick
   end
@@ -127,7 +127,7 @@ object Form1: TForm1
     Height = 23
     Top = 92
     Width = 168
-    Caption = 'MeasureSize [AnsiChar]'
+    Caption = 'DdeQueryString [AnsiChar]'
     TabOrder = 10
     OnClick = cmdMeasureSizeArrayOfAnsiCharClick
   end
@@ -152,7 +152,7 @@ object Form1: TForm1
     Height = 23
     Top = 124
     Width = 168
-    Caption = 'MeasureSize [String]'
+    Caption = 'DdeQueryString [String]'
     TabOrder = 12
     OnClick = cmdMeasureSizeStringClick
   end
