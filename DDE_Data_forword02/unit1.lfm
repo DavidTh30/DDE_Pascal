@@ -1,0 +1,175 @@
+object Form1: TForm1
+  Left = 495
+  Height = 360
+  Top = 103
+  Width = 740
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
+  Caption = 'DdeGetData with Array'
+  ClientHeight = 360
+  ClientWidth = 740
+  LCLVersion = '4.4.0.0'
+  OnCreate = FormCreate
+  object cmdDdeInitialize: TButton
+    Left = 8
+    Height = 23
+    Top = 64
+    Width = 168
+    Caption = 'DdeInitialize'
+    TabOrder = 0
+    OnClick = cmdDdeInitializeClick
+  end
+  object cmdDdeCreateStringHandle: TButton
+    Left = 8
+    Height = 23
+    Top = 152
+    Width = 168
+    Caption = 'DdeCreateStringHandle'
+    TabOrder = 1
+    OnClick = cmdDdeCreateStringHandleClick
+  end
+  object Label5: TLabel
+    Left = 8
+    Height = 15
+    Top = 280
+    Width = 86
+    Caption = 'g_hszAppName:'
+  end
+  object txtService1: TEdit
+    Left = 108
+    Height = 23
+    Top = 272
+    Width = 104
+    TabOrder = 2
+    Text = 'g_hszAppName'
+  end
+  object Label2: TLabel
+    Left = 8
+    Height = 15
+    Top = 304
+    Width = 92
+    Caption = 'g_hszTopicName:'
+  end
+  object txtTopic1: TEdit
+    Left = 108
+    Height = 23
+    Top = 296
+    Width = 104
+    TabOrder = 3
+    Text = 'g_hszTopicName'
+  end
+  object Label3: TLabel
+    Left = 8
+    Height = 15
+    Top = 328
+    Width = 88
+    Caption = 'g_hszItemName:'
+  end
+  object txtItem1: TEdit
+    Left = 108
+    Height = 23
+    Top = 320
+    Width = 104
+    TabOrder = 4
+    Text = 'g_hszItemName'
+  end
+  object CheckBox1: TCheckBox
+    Left = 8
+    Height = 19
+    Top = 96
+    Width = 138
+    Caption = 'uFmt / uType message'
+    TabOrder = 5
+  end
+  object CheckBox2: TCheckBox
+    Left = 8
+    Height = 19
+    Top = 120
+    Width = 153
+    Caption = 'XTYP_MONITOR message'
+    TabOrder = 6
+  end
+  object cmdUninitialize: TButton
+    Left = 8
+    Height = 23
+    Top = 240
+    Width = 168
+    Caption = 'Uninitialize'
+    TabOrder = 7
+    OnClick = cmdUninitializeClick
+  end
+  object cmdMeasureSizeArrayOfByte: TButton
+    Left = 200
+    Height = 23
+    Top = 64
+    Width = 168
+    Caption = 'MeasureSize [Byte]'
+    TabOrder = 8
+    OnClick = cmdMeasureSizeArrayOfByteClick
+  end
+  object Memo1: TMemo
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 376
+    Height = 360
+    Top = 0
+    Width = 364
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    ScrollBars = ssAutoBoth
+    TabOrder = 9
+    WordWrap = False
+  end
+  object cmdMeasureSizeArrayOfAnsiChar: TButton
+    Left = 200
+    Height = 23
+    Top = 92
+    Width = 168
+    Caption = 'MeasureSize [AnsiChar]'
+    TabOrder = 10
+    OnClick = cmdMeasureSizeArrayOfAnsiCharClick
+  end
+  object cmdConnect: TButton
+    Left = 8
+    Height = 23
+    Top = 176
+    Width = 168
+    Caption = 'Connect/Open conversation'
+    TabOrder = 11
+    OnClick = cmdConnectClick
+  end
+  object Label4: TLabel
+    Left = 8
+    Height = 45
+    Top = 8
+    Width = 251
+    Caption = 'To see all debug message:'#13#10'Please run Debugserver or Debug message view'#13#10'Is in Lazarus tool folder'
+  end
+  object cmdMeasureSizeString: TButton
+    Left = 200
+    Height = 23
+    Top = 124
+    Width = 168
+    Caption = 'MeasureSize [String]'
+    TabOrder = 12
+    OnClick = cmdMeasureSizeStringClick
+  end
+  object cmdDdeGetData: TButton
+    Left = 8
+    Height = 23
+    Top = 200
+    Width = 168
+    Caption = 'DdeGetData'
+    TabOrder = 13
+    OnClick = cmdDdeGetDataClick
+  end
+  object Label1: TLabel
+    Left = 200
+    Height = 15
+    Top = 176
+    Width = 51
+    Caption = 'DDE data:'
+  end
+end
