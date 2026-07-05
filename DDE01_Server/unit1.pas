@@ -28,8 +28,10 @@ type
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
+    Label6: TLabel;
     txtItem: TEdit;
     txtAdvise: TEdit;
+    txtValue: TEdit;
     txtService: TEdit;
     txtTopic: TEdit;
     procedure cmdAdviseClick(Sender: TObject);
@@ -122,9 +124,12 @@ var
   lSize : Long;
   //sBuffer : String;
   sBuffer : array of Byte;
+  Buffer: array of AnsiChar;
+  AnsiStr: AnsiString;
   Ret : Long;
   ReceivedText: string;
   s:string;
+  i:integer;
 begin
 
   Result := DDE_FNOTPROCESSED; //Result := 0;
@@ -132,15 +137,15 @@ begin
   // Handle transactions here
   if form1.CheckBox1.Checked then
   begin
-    log({$I %LINENUM%},': In client callback. uFmt:'+ IntToHex(uFmt, 8) );
-    log({$I %LINENUM%},': In client callback. uType:'+ IntToHex(uType, 8));
+    log({$I %LINENUM%},': In server callback. uFmt:'+ IntToHex(uFmt, 8) );
+    log({$I %LINENUM%},': In server callback. uType:'+ IntToHex(uType, 8));
   end;
 
   if (uFmt = CF_TEXT) or (uFmt =0) then
   begin
     if (uType = XTYP_ADVDATA) then
     begin
-      log({$I %LINENUM%},': XTYP_ADVDATA');
+      log({$I %LINENUM%},': Server: XTYP_ADVDATA');
       lSize := DdeGetData(hData, nil, 0, 0);
       log({$I %LINENUM%},' lSize: '+lSize.ToString);
       If (lSize > 0) Then
@@ -157,46 +162,46 @@ begin
     end;
     if (uType = XTYP_ADVSTART) then
     begin
-      log({$I %LINENUM%},': XTYP_ADVSTART');
+      log({$I %LINENUM%},': Server: XTYP_ADVSTART');
     end;
     if (uType = XTYP_ADVSTOP) then
     begin
-      log({$I %LINENUM%},': XTYP_ADVSTOP');
+      log({$I %LINENUM%},': Server: XTYP_ADVSTOP');
     end;
     if (uType = XTYP_CONNECT) then
     begin
-      log({$I %LINENUM%},': XTYP_CONNECT');
+      log({$I %LINENUM%},': Server: XTYP_CONNECT');
       Result := 1;
       Result := DDE_FACK;
     end;
     if (uType = XTYP_CONNECT_CONFIRM) then
     begin
-      log({$I %LINENUM%},': XTYP_CONNECT_CONFIRM');
+      log({$I %LINENUM%},': Server: XTYP_CONNECT_CONFIRM');
     end;
     if (uType = XTYP_DISCONNECT) then
     begin
-      log({$I %LINENUM%},': XTYP_DISCONNECT');
+      log({$I %LINENUM%},': Server: XTYP_DISCONNECT');
     end;
     if (uType = XTYP_ERROR) then
     begin
-      log({$I %LINENUM%},': XTYP_ERROR');
+      log({$I %LINENUM%},': Server: XTYP_ERROR');
     end;
     if (uType = XTYP_EXECUTE) then
     begin
-      log({$I %LINENUM%},': XTYP_EXECUTE');
+      log({$I %LINENUM%},': Server: XTYP_EXECUTE');
     end;
     if (uType = XTYP_MASK) then
     begin
-      log({$I %LINENUM%},': XTYP_MASK');
+      log({$I %LINENUM%},': Server: XTYP_MASK');
     end;
     if form1.CheckBox2.Checked then
     if (uType = XTYP_MONITOR) then
     begin
-      log({$I %LINENUM%},': XTYP_MONITOR');
+      log({$I %LINENUM%},': Server: XTYP_MONITOR');
     end;
     if (uType = XTYP_POKE) then
     begin
-      log({$I %LINENUM%},': XTYP_POKE');
+      log({$I %LINENUM%},': Server: XTYP_POKE');
 
       // Must return DDE_FACK to tell the client the server accepted it
       Result := DDE_FACK;
@@ -204,29 +209,81 @@ begin
     end;
     if (uType = XTYP_REGISTER) then
     begin
-      log({$I %LINENUM%},': XTYP_REGISTER');
+      log({$I %LINENUM%},': Server: XTYP_REGISTER');
     end;
     if (uType = XTYP_REQUEST) then
     begin
-      log({$I %LINENUM%},': XTYP_REQUEST');
+      log({$I %LINENUM%},': Server: XTYP_REQUEST');
+      lSize := DdeQueryString(InstId, hsz2, nil, 0, CP_WINANSI);
+      log({$I %LINENUM%},' lSize: '+lSize.ToString);
+      if lSize > 0 then
+      begin
+        SetLength(Buffer, 0); // Resets all elements to 0
+        SetLength(Buffer, lSize+1);
+        log({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString);
+        lSize := DdeQueryString(InstId, hsz2, @Buffer[0], Length(Buffer), CP_WINANSI);
+        log({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString);
+        log({$I %LINENUM%},' Length(Form1.txtItem.Text): '+Length(Form1.txtItem.Text).ToString);
+        i:=0;
+        if Length(Buffer)>=1 then
+        if IntToHex(Ord(Buffer[High(Buffer)])) = '00' then i:=1;
+        SetString(AnsiStr, PAnsiChar(@Buffer[0]), Length(Buffer)-i);
+        ////////////////////////////////////////////////
+        s := string(AnsiStr);
+        //log({$I %LINENUM%},' s := string(AnsiStr) Length(s): '+Length(s).ToString);
+        //s:=s;
+        //log({$I %LINENUM%},' s:=s Length(s): '+Length(s).ToString);
+        //////////////////////////////////////////////////
+        //s:='';
+        //for i:=0 to High(Buffer) do
+        //s:=s+':'+i.ToString;
+        //log({$I %LINENUM%},' Server: s: '+s);
+        //s:='';
+        //for i:=0 to High(Buffer) do
+        //s:=s+':'+IntToHex(Ord(Buffer[i]));
+        //log({$I %LINENUM%},' Server: s: '+s);
+        /////////////////////////////////////////////////
+        //i:=low(Form1.txtItem.Text);
+        //log({$I %LINENUM%},' Server: low(Form1.txtItem.Text): '+i.ToString);
+        //i:=High(Form1.txtItem.Text);
+        //log({$I %LINENUM%},' Server: High(Form1.txtItem.Text): '+i.ToString);
+        /////////////////////////////////////////////////
+        //s:='';
+        //for i:=low(Form1.txtItem.Text) to High(Form1.txtItem.Text) do
+        //s:=s+':'+IntToHex(Ord(Form1.txtItem.Text[i]));
+        //log({$I %LINENUM%},' Server: s: '+s);
+        /////////////////////////////////////////////////
+        //log({$I %LINENUM%},' Length(s): '+Length(s).ToString);
+        //log({$I %LINENUM%},' Length(Form1.txtItem.Text): '+Length(Form1.txtItem.Text).ToString);
+        //////////////////////////////////////////////////
+        If (s = Form1.txtItem.Text) Then
+        begin
+          s:=Form1.txtValue.Text;
+          Result := DdeCreateDataHandle(InstId, PByte(PAnsiChar(s)), Length(s), 0, hsz2, CF_TEXT, 0);
+        end
+        else
+        begin
+          Result := DDE_FNOTPROCESSED;
+        end;
+      end
     end;
     if (uType = XTYP_SHIFT) then
     begin
-      log({$I %LINENUM%},': XTYP_SHIFT');
+      log({$I %LINENUM%},': Server: XTYP_SHIFT');
     end;
     if (uType = XTYP_UNREGISTER) then
     begin
-      log({$I %LINENUM%},': XTYP_UNREGISTER');
+      log({$I %LINENUM%},': Server: XTYP_UNREGISTER');
     end;
     if (uType = XTYP_WILDCONNECT) then
     begin
-      log({$I %LINENUM%},': XTYP_WILDCONNECT');
+      log({$I %LINENUM%},': Server: XTYP_WILDCONNECT');
       //DdeCreateDataHandle(InstId, nil, 2 * sizeof(HSZPAIR),0,0,0,0);
     end;
     if (uType = XTYP_XACT_COMPLETE) then   {DDE Client receiving asynchronous request results }
     begin
       // Data contains the result of the completed transaction
-      log({$I %LINENUM%},': XTYP_XACT_COMPLETE');
+      log({$I %LINENUM%},': Server: XTYP_XACT_COMPLETE');
       // Must return DDE_FACK to acknowledge success
       Result := DDE_FACK;
     end;

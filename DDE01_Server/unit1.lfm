@@ -2,10 +2,10 @@ object Form1: TForm1
   Left = 405
   Height = 202
   Top = 118
-  Width = 559
+  Width = 648
   Caption = 'Server DDE'
   ClientHeight = 202
-  ClientWidth = 559
+  ClientWidth = 648
   LCLVersion = '4.4.0.0'
   OnCreate = FormCreate
   object Label2: TLabel
@@ -164,5 +164,21 @@ object Form1: TForm1
     Caption = 'Disconnect conversation'
     TabOrder = 13
     OnClick = cmdDisconnectConversationClick
+  end
+  object txtValue: TEdit
+    Left = 480
+    Height = 23
+    Top = 112
+    Width = 127
+    TabOrder = 14
+    Text = '2.22'
+    OnChange = txtItemChange
+  end
+  object Label6: TLabel
+    Left = 416
+    Height = 15
+    Top = 120
+    Width = 31
+    Caption = 'Value:'
   end
 end
