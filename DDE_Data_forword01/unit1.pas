@@ -238,12 +238,12 @@ begin
     g_hszAppName := DdeCreateStringHandle(InstId, PAnsiChar(txtService1.Text), CP_WINANSI);
     g_hszTopicName := DdeCreateStringHandle(InstId, PAnsiChar(txtTopic1.Text), CP_WINANSI);
     g_hszItemName := DdeCreateStringHandle(InstId, PAnsiChar(txtItem1.Text), CP_WINANSI);
-    log({$I %LINENUM%},'DdeCreateStringHandle Success  g_hszAppName: '+IntToHex(g_hszAppName, 8));
+    log({$I %LINENUM%},' DdeCreateStringHandle Success  g_hszAppName: '+IntToHex(g_hszAppName, 8));
   end
   else
   begin
-    log({$I %LINENUM%},'DDE Not Initialize  DdeInitializeResultCode: '+ DdeInitializeResultCode.ToString);
-    log({$I %LINENUM%},'DDE Not Initialize  InstId: '+ IntToHex(InstId, 8));
+    log({$I %LINENUM%},' DDE Not Initialize  DdeInitializeResultCode: '+ DdeInitializeResultCode.ToString);
+    log({$I %LINENUM%},' DDE Not Initialize  InstId: '+ IntToHex(InstId, 8));
   end;
 
 end;
@@ -267,7 +267,7 @@ begin
   end
   else
   begin
-      log({$I %LINENUM%},'DDE Not Initialize  InstId: '+ IntToHex(InstId, 8));
+      log({$I %LINENUM%},' DDE Not Initialize  InstId: '+ IntToHex(InstId, 8));
   end;
 
 end;
@@ -437,7 +437,7 @@ begin
   end
   else
   begin
-    log({$I %LINENUM%},'DDE Not Initialize  InstId: '+ IntToHex(InstId, 8));
+    log({$I %LINENUM%},' DDE Not Connect hConv_: '+ IntToHex(hConv_, 8));
   end;
 
   If (InstId>0) Then
@@ -463,7 +463,7 @@ begin
   End
   else
   begin
-      log({$I %LINENUM%},' Dde not Initialize yet');
+      log({$I %LINENUM%},' DDE Not Initialize  InstId: '+ IntToHex(InstId, 8));
   end;
 
   SendDebug('-------------------- End DDE Test ------------------------');
