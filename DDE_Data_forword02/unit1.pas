@@ -290,28 +290,32 @@ begin
 
   if hTranData > 0 then
   begin
+    AnsiStr:='';
     log({$I %LINENUM%},' DdeGetData---------------------');
 
     //Get target DDE size
     DataSize := DdeGetData(hTranData, nil, 0, 0);
     log({$I %LINENUM%},' DataSize: ' + DataSize.ToString);
 
-    //Allocate/Resize local memory buffer
-    SetLength(AnsiStr, DataSize);
-
     if DataSize > 0 then
     begin
+      //Allocate/Resize local memory buffer
+      SetLength(AnsiStr, DataSize);
       //Fetch the actual data into our buffer
       DataSize := DdeGetData(hTranData, PByte(PAnsiChar(AnsiStr)), Length(AnsiStr), 0);
       log({$I %LINENUM%},' DataSize: ' + DataSize.ToString);
       log({$I %LINENUM%},' Length(AnsiStr): ' + Length(AnsiStr).ToString);
 
       Label1.Caption:='DDE data: '+string(PAnsiChar(AnsiStr));
+    end
+    else
+    begin
+      Label1.Caption:='DDE data: '
     end;
   end
   else
   begin
-    log({$I %LINENUM%},' No ClientTransaction hTranData: ' + hTranData.ToString);
+    log({$I %LINENUM%},' No ClientTransaction hTranData: ' + IntToHex(hTranData, 8));
   end;
 end;
 
@@ -368,120 +372,236 @@ end;
 
 procedure TForm1.cmdMeasureSizeArrayOfAnsiCharClick(Sender: TObject);
 var
-  Length_: DWORD;
+  DataSize: DWORD;
   Buffer: array of AnsiChar;
   AnsiStr: AnsiString;
-  s:string;
+
 begin
-
-  log2({$I %LINENUM%},' Measure Size Array Of AnsiChar -------------------------');
-  Length_:=40;
-  log2({$I %LINENUM%},' Length_: '+Length_.ToString);
-  SetLength(Buffer, Length_);
-  log2({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString+'  OK');
-  log2({$I %LINENUM%},' SizeOf(Buffer): '+SizeOf(Buffer).ToString+'  Wrong!');
-  log2({$I %LINENUM%},' SizeOf use for a static array');
-
-  log2({$I %LINENUM%},' Measure Size Of g_hszAppName -------------------------');
-  Length_ := DdeQueryString(InstId, g_hszAppName, nil, 0, CP_WINANSI);
-  log2({$I %LINENUM%},' g_hszAppName Length_: '+Length_.ToString);
-
-  if Length_ > 0 then
+  if hConv_ = 0 then
   begin
-    //FillChar(Buffer, Length(Buffer) * SizeOf(AnsiChar), 0);  //not work with FPC
-    SetLength(Buffer, 0); // Resets all elements to 0
-    SetLength(Buffer, Length_+1);
-    log2({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString);
-    Length_ := DdeQueryString(InstId, g_hszAppName, @Buffer[0], Length(Buffer), CP_WINANSI);
-    log2({$I %LINENUM%},' DdeQueryString Length_: '+Length_.ToString);
-    log2({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString);
-
-    SetString(AnsiStr, PAnsiChar(@Buffer[0]), Length(Buffer));
-    s := string(AnsiStr);
-    log2({$I %LINENUM%},' ResultString s: '+s);
+    log2({$I %LINENUM%},' DDE Not Connect hConv_: '+ IntToHex(hConv_, 8));
+    exit
   end
   else
   begin
-    log2({$I %LINENUM%},' String handle not create');
+    log2({$I %LINENUM%},' Send the request transaction ---------------------');
+    hTranData := DdeClientTransaction(
+    nil,               // No outbound data
+    0,                 // Data size is 0
+    hConv_,             // Active conversation handle
+    g_hszItemName,           // The item handle we want (e.g., 'R1C1' for Excel)
+    CF_TEXT,           // Request data as standard text
+    XTYP_REQUEST,      // Transaction type
+    5000,              // 5-second timeout
+    nil                // Ignore result flag
+    );
+
+    if hTranData > 0 then
+    begin
+      log2({$I %LINENUM%},' DdeClientTransaction Request Success hTranData: ' + IntToHex(hTranData, 8));
+    end
+    else
+    begin
+      log2({$I %LINENUM%},' DdeClientTransaction Request Failed hTranData: ' + IntToHex(hTranData, 8));
+      TranslateError();
+      exit;
+    end;
   end;
 
-  SetLength(Buffer, 0);  // Free/Clean up memory
-end;
-
-procedure TForm1.cmdMeasureSizeArrayOfByteClick(Sender: TObject);
-var
-  Length_: DWORD;
-  Buffer: array of Byte;
-  AnsiStr: AnsiString;
-  s:string;
-begin
-
-    log2({$I %LINENUM%},' Measure Size Array Of Byte -------------------------');
-    Length_:=40;
-    log2({$I %LINENUM%},' Length_: '+Length_.ToString);
-    SetLength(Buffer, Length_);
+  if hTranData > 0 then
+  begin
+    log2({$I %LINENUM%},' Measure Size Array Of AnsiChar -------------------------');
+    DataSize:=40;
+    log2({$I %LINENUM%},' DataSize: '+DataSize.ToString);
+    SetLength(Buffer, DataSize);
     log2({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString+'  OK');
     log2({$I %LINENUM%},' SizeOf(Buffer): '+SizeOf(Buffer).ToString+'  Wrong!');
     log2({$I %LINENUM%},' SizeOf use for a static array');
 
-    log2({$I %LINENUM%},' Measure Size Of g_hszAppName -------------------------');
-    Length_ := DdeQueryString(InstId, g_hszAppName, nil, 0, CP_WINANSI);
-    log2({$I %LINENUM%},' g_hszAppName Length_: '+Length_.ToString);
+    log2({$I %LINENUM%},' Measure Size Of DdeClientTransaction hTranData -------------------------');
+    DataSize := DdeGetData(hTranData, nil, 0, 0);
+    log2({$I %LINENUM%},' DdeGetData DataSize: ' + DataSize.ToString);
 
-    if Length_ > 0 then
+    if DataSize > 0 then
     begin
-      Buffer:= Default(TByteArray); // Resets all elements to 0
-      SetLength(Buffer, Length_+1);
+      //FillChar(Buffer, Length(Buffer) * SizeOf(AnsiChar), 0);  //not work with FPC
+      SetLength(Buffer, 0); // Resets all elements to 0
+      SetLength(Buffer, DataSize);
       log2({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString);
-      Length_ := DdeQueryString(InstId, g_hszAppName, @Buffer[0], Length(Buffer), CP_WINANSI);
-      log2({$I %LINENUM%},' DdeQueryString Length_: '+Length_.ToString);
+      //Fetch the actual data into our buffer
+      DataSize := DdeGetData(hTranData, @Buffer[0], Length(Buffer), 0);
+      log2({$I %LINENUM%},' DdeGetData DataSize: '+DataSize.ToString);
       log2({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString);
 
       SetString(AnsiStr, PAnsiChar(@Buffer[0]), Length(Buffer));
-      s := string(AnsiStr);
-      log2({$I %LINENUM%},' ResultString s: '+s);
+      log2({$I %LINENUM%},' AnsiStr: ' + string(AnsiStr));
+      Label1.Caption:='DDE data: '+string(AnsiStr);
     end
     else
     begin
-      log2({$I %LINENUM%},' String handle not create');
+      Label1.Caption:='DDE data: '
     end;
+  end
+  else
+  begin
+    log2({$I %LINENUM%},' DdeClientTransaction Failure hTranData: ' + IntToHex(hTranData, 8));
+    TranslateError();
+  end;
 
-    SetLength(Buffer, 0); // Free/Clean up memory
+  SetLength(Buffer, 0); // Free/Clean up memory
+
+end;
+
+procedure TForm1.cmdMeasureSizeArrayOfByteClick(Sender: TObject);
+var
+  DataSize: DWORD;
+  Buffer: array of Byte;
+  AnsiStr: AnsiString;
+begin
+  if hConv_ = 0 then
+  begin
+    log2({$I %LINENUM%},' DDE Not Connect hConv_: '+ IntToHex(hConv_, 8));
+    exit
+  end
+  else
+  begin
+    log2({$I %LINENUM%},' Send the request transaction ---------------------');
+    hTranData := DdeClientTransaction(
+    nil,               // No outbound data
+    0,                 // Data size is 0
+    hConv_,             // Active conversation handle
+    g_hszItemName,           // The item handle we want (e.g., 'R1C1' for Excel)
+    CF_TEXT,           // Request data as standard text
+    XTYP_REQUEST,      // Transaction type
+    5000,              // 5-second timeout
+    nil                // Ignore result flag
+    );
+
+    if hTranData > 0 then
+    begin
+      log2({$I %LINENUM%},' DdeClientTransaction Request Success hTranData: ' + IntToHex(hTranData, 8));
+    end
+    else
+    begin
+      log2({$I %LINENUM%},' DdeClientTransaction Request Failed hTranData: ' + IntToHex(hTranData, 8));
+      TranslateError();
+      exit;
+    end;
+  end;
+
+  if hTranData > 0 then
+  begin
+    log2({$I %LINENUM%},' Measure Size Array Of Byte -------------------------');
+    DataSize:=40;
+    log2({$I %LINENUM%},' DataSize: '+DataSize.ToString);
+    SetLength(Buffer, DataSize);
+    log2({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString+'  OK');
+    log2({$I %LINENUM%},' SizeOf(Buffer): '+SizeOf(Buffer).ToString+'  Wrong!');
+    log2({$I %LINENUM%},' SizeOf use for a static array');
+
+    log2({$I %LINENUM%},' Measure Size Of DdeClientTransaction hTranData -------------------------');
+    DataSize := DdeGetData(hTranData, nil, 0, 0);
+    log2({$I %LINENUM%},' DdeGetData DataSize: ' + DataSize.ToString);
+
+    if DataSize > 0 then
+    begin
+      Buffer:= Default(TByteArray); // Resets all elements to 0
+      SetLength(Buffer, DataSize);
+      log2({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString);
+      //Fetch the actual data into our buffer
+      DataSize := DdeGetData(hTranData, @Buffer[0], Length(Buffer), 0);
+      log2({$I %LINENUM%},' DdeGetData DataSize: '+DataSize.ToString);
+      log2({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString);
+
+      SetString(AnsiStr, PAnsiChar(@Buffer[0]), Length(Buffer));
+      log2({$I %LINENUM%},' AnsiStr: ' + string(AnsiStr));
+      Label1.Caption:='DDE data: '+string(AnsiStr);
+    end
+    else
+    begin
+      Label1.Caption:='DDE data: '
+    end;
+  end
+  else
+  begin
+    log2({$I %LINENUM%},' DdeClientTransaction Failure hTranData: ' + IntToHex(hTranData, 8));
+    TranslateError();
+  end;
+
+  SetLength(Buffer, 0); // Free/Clean up memory
 end;
 
 procedure TForm1.cmdMeasureSizeStringClick(Sender: TObject);
 var
-  Length_: DWORD;
-  Buffer: array of AnsiChar;
+  DataSize: DWORD;
   AnsiStr: AnsiString;
-  s:string;
 begin
-  log2({$I %LINENUM%},' Measure Size Array Of AnsiChar -------------------------');
-  Length_:=40;
-  log2({$I %LINENUM%},' Length_: '+Length_.ToString);
-  SetLength(AnsiStr, Length_);
-  log2({$I %LINENUM%},' Length(AnsiStr): '+Length(AnsiStr).ToString+'  OK');
-  log2({$I %LINENUM%},' SizeOf(AnsiStr): '+SizeOf(AnsiStr).ToString+'  Wrong!');
-
-  log2({$I %LINENUM%},' Measure Size Of g_hszAppName -------------------------');
-  Length_ := DdeQueryString(InstId, g_hszAppName, nil, 0, CP_WINANSI);
-  log2({$I %LINENUM%},' g_hszAppName Length_: '+Length_.ToString);
-
-  if Length_ > 0 then
+  if hConv_ = 0 then
   begin
-    SetLength(AnsiStr, 0); // Resets all elements to 0
-    SetLength(AnsiStr, Length_+1);
-    log2({$I %LINENUM%},' Length(AnsiStr): '+Length(AnsiStr).ToString);
-    Length_ := DdeQueryString(InstId, g_hszAppName, PAnsiChar(AnsiStr), Length(AnsiStr), CP_WINANSI);
-    log2({$I %LINENUM%},' DdeQueryString Length_: '+Length_.ToString);
-    log2({$I %LINENUM%},' Length(AnsiStr): '+Length(AnsiStr).ToString);
-
-    s := string(AnsiStr);
-    log2({$I %LINENUM%},' ResultString s: '+s);
+    log2({$I %LINENUM%},' DDE Not Connect hConv_: '+ IntToHex(hConv_, 8));
+    exit
   end
   else
   begin
-    log2({$I %LINENUM%},' String handle not create');
+    log2({$I %LINENUM%},' Send the request transaction ---------------------');
+    hTranData := DdeClientTransaction(
+    nil,               // No outbound data
+    0,                 // Data size is 0
+    hConv_,             // Active conversation handle
+    g_hszItemName,           // The item handle we want (e.g., 'R1C1' for Excel)
+    CF_TEXT,           // Request data as standard text
+    XTYP_REQUEST,      // Transaction type
+    5000,              // 5-second timeout
+    nil                // Ignore result flag
+    );
+
+    if hTranData > 0 then
+    begin
+      log2({$I %LINENUM%},' DdeClientTransaction Request Success hTranData: ' + IntToHex(hTranData, 8));
+    end
+    else
+    begin
+      log2({$I %LINENUM%},' DdeClientTransaction Request Failed hTranData: ' + IntToHex(hTranData, 8));
+      TranslateError();
+      exit;
+    end;
+  end;
+
+  if hTranData > 0 then
+  begin
+    AnsiStr:='';
+    log2({$I %LINENUM%},' Measure Size Array Of AnsiChar -------------------------');
+    DataSize:=40;
+    log2({$I %LINENUM%},' Length_: '+DataSize.ToString);
+    SetLength(AnsiStr, DataSize);
+    log2({$I %LINENUM%},' Length(AnsiStr): '+Length(AnsiStr).ToString+'  OK');
+    log2({$I %LINENUM%},' SizeOf(AnsiStr): '+SizeOf(AnsiStr).ToString+'  Wrong!');
+
+    log2({$I %LINENUM%},' Measure Size Of DdeClientTransaction hTranData -------------------------');
+    DataSize := DdeGetData(hTranData, nil, 0, 0);
+    log2({$I %LINENUM%},' DdeGetData DataSize: ' + DataSize.ToString);
+
+    if DataSize > 0 then
+    begin
+      //Allocate/Resize local memory buffer
+      SetLength(AnsiStr, DataSize);
+
+      //Fetch the actual data into our buffer
+      DataSize := DdeGetData(hTranData, PByte(PAnsiChar(AnsiStr)), Length(AnsiStr), 0);
+      log2({$I %LINENUM%},' DdeGetData DataSize: ' + DataSize.ToString);
+      log2({$I %LINENUM%},' Length(AnsiStr): ' + Length(AnsiStr).ToString);
+      log2({$I %LINENUM%},' AnsiStr: ' + string(PAnsiChar(AnsiStr)));
+      Label1.Caption:='DDE data: '+string(PAnsiChar(AnsiStr));
+    end
+    else
+    begin
+      Label1.Caption:='DDE data: '
+    end;
+  end
+  else
+  begin
+    log2({$I %LINENUM%},' DdeClientTransaction Failure hTranData: ' + IntToHex(hTranData, 8));
+    TranslateError();
   end;
 
   SetLength(AnsiStr, 0);  // Free/Clean up memory

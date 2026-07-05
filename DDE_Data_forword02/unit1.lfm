@@ -103,7 +103,7 @@ object Form1: TForm1
     Height = 23
     Top = 64
     Width = 168
-    Caption = 'MeasureSize [Byte]'
+    Caption = 'DdeGetData [Byte]'
     TabOrder = 8
     OnClick = cmdMeasureSizeArrayOfByteClick
   end
@@ -127,7 +127,7 @@ object Form1: TForm1
     Height = 23
     Top = 92
     Width = 168
-    Caption = 'MeasureSize [AnsiChar]'
+    Caption = 'DdeGetData [AnsiChar]'
     TabOrder = 10
     OnClick = cmdMeasureSizeArrayOfAnsiCharClick
   end
@@ -152,7 +152,7 @@ object Form1: TForm1
     Height = 23
     Top = 124
     Width = 168
-    Caption = 'MeasureSize [String]'
+    Caption = 'DdeGetData [String]'
     TabOrder = 12
     OnClick = cmdMeasureSizeStringClick
   end
