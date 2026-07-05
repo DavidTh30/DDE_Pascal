@@ -189,6 +189,10 @@ begin
     if (uType = XTYP_EXECUTE) then
     begin
       log({$I %LINENUM%},': Server: XTYP_EXECUTE');
+      lSize := DdeGetData(hData, nil, 0, 0);
+      SetLength(Buffer, 0); // Resets all elements to 0
+      SetLength(Buffer, lSize+1);
+      DdeGetData(hData, @Buffer[0], Length(Buffer), 0);
     end;
     if (uType = XTYP_MASK) then
     begin
@@ -259,6 +263,14 @@ begin
         If (s = Form1.txtItem.Text) Then
         begin
           s:=Form1.txtValue.Text;
+          //DdeCreateDataHandle
+          //idInst: Instance Identifier ที่ได้จากการเรียก
+          //DdeInitializepSrc: พอยน์เตอร์ไปยังบัฟเฟอร์ที่เก็บข้อมูล
+          //cb: ขนาดของข้อมูล (เป็นไบต์)
+          //cbOff: ระยะออฟเซ็ตจากจุดเริ่มต้นของข้อมูล
+          //hszItem: String Handle ที่ระบุชื่อรายการข้อมูล
+          //wFmt: รูปแบบข้อมูล (เช่น CF_TEXT)afCmd: ค่าแฟล็ก เช่น
+          //HDATA_APPOWNED (ระบุว่าแอปพลิเคชันเป็นเจ้าของออบเจ็กต์นี้)
           Result := DdeCreateDataHandle(InstId, PByte(PAnsiChar(s)), Length(s), 0, hsz2, CF_TEXT, 0);
         end
         else
@@ -295,6 +307,7 @@ begin
   InstId:=0;
   hConv_:=0;
   hDdeServiceName:=0;
+
 end;
 
 procedure TForm1.txtItemChange(Sender: TObject);
