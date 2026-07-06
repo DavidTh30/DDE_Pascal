@@ -1,0 +1,55 @@
+object Form1: TForm1
+  Left = 594
+  Height = 465
+  Top = 168
+  Width = 622
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
+  Caption = 'Array_Converter'
+  ClientHeight = 465
+  ClientWidth = 622
+  Position = poWorkAreaCenter
+  LCLVersion = '3.4.0.0'
+  Scaled = False
+  object Button1: TButton
+    Left = 46
+    Height = 30
+    Top = 64
+    Width = 123
+    Caption = 'Array of Byte'
+    TabOrder = 0
+    OnClick = Button1Click
+  end
+  object Memo1: TMemo
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 192
+    Height = 465
+    Top = 0
+    Width = 430
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    ScrollBars = ssAutoBoth
+    TabOrder = 1
+  end
+  object Button2: TButton
+    Left = 46
+    Height = 30
+    Top = 96
+    Width = 123
+    Caption = 'Array of AnsiChar'
+    TabOrder = 2
+    OnClick = Button2Click
+  end
+  object Button3: TButton
+    Left = 46
+    Height = 30
+    Top = 128
+    Width = 123
+    Caption = 'String'
+    TabOrder = 3
+    OnClick = Button3Click
+  end
+end
