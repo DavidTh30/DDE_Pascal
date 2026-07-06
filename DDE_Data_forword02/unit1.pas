@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, Windows, Messages, dbugintf;
+  ExtCtrls, Windows, Messages, dbugintf, StrUtils;
 
 type
 
@@ -375,7 +375,8 @@ var
   DataSize: DWORD;
   Buffer: array of AnsiChar;
   AnsiStr: AnsiString;
-
+  s:string;
+  i:integer;
 begin
   if hConv_ = 0 then
   begin
@@ -434,6 +435,21 @@ begin
       log2({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString);
 
       SetString(AnsiStr, PAnsiChar(@Buffer[0]), Length(Buffer));
+
+      s:='';
+      for i := low(AnsiStr) to high(AnsiStr) do s:=s+':'+IntToHex(Ord(AnsiStr[i]));
+      log2({$I %LINENUM%},' Hex AnsiStr: '+s);
+
+      s:='';
+      for i := low(AnsiStr) to high(AnsiStr) do s:=s+':'+AnsiStr[i];
+      log2({$I %LINENUM%},' Char AnsiStr: '+s);
+
+      AnsiStr:=DelChars(AnsiStr,#0);
+
+      s:='';
+      for i := low(AnsiStr) to high(AnsiStr) do s:=s+':'+IntToHex(Ord(AnsiStr[i]));
+      log2({$I %LINENUM%},' Hex AnsiStr: '+s);
+
       log2({$I %LINENUM%},' AnsiStr: ' + string(AnsiStr));
       Label1.Caption:='DDE data: '+string(AnsiStr);
     end
@@ -457,6 +473,8 @@ var
   DataSize: DWORD;
   Buffer: array of Byte;
   AnsiStr: AnsiString;
+  s:String;
+  i:integer;
 begin
   if hConv_ = 0 then
   begin
@@ -514,6 +532,21 @@ begin
       log2({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString);
 
       SetString(AnsiStr, PAnsiChar(@Buffer[0]), Length(Buffer));
+
+      s:='';
+      for i := low(AnsiStr) to high(AnsiStr) do s:=s+':'+IntToHex(Ord(AnsiStr[i]));
+      log2({$I %LINENUM%},' Hex AnsiStr: '+s);
+
+      s:='';
+      for i := low(AnsiStr) to high(AnsiStr) do s:=s+':'+AnsiStr[i];
+      log2({$I %LINENUM%},' Char AnsiStr: '+s);
+
+      AnsiStr:=DelChars(AnsiStr,#0);
+
+      s:='';
+      for i := low(AnsiStr) to high(AnsiStr) do s:=s+':'+IntToHex(Ord(AnsiStr[i]));
+      log2({$I %LINENUM%},' Hex AnsiStr: '+s);
+
       log2({$I %LINENUM%},' AnsiStr: ' + string(AnsiStr));
       Label1.Caption:='DDE data: '+string(AnsiStr);
     end
@@ -535,6 +568,8 @@ procedure TForm1.cmdMeasureSizeStringClick(Sender: TObject);
 var
   DataSize: DWORD;
   AnsiStr: AnsiString;
+  i:integer;
+  s:string;
 begin
   if hConv_ = 0 then
   begin
@@ -591,6 +626,21 @@ begin
       log2({$I %LINENUM%},' DdeGetData DataSize: ' + DataSize.ToString);
       log2({$I %LINENUM%},' Length(AnsiStr): ' + Length(AnsiStr).ToString);
       log2({$I %LINENUM%},' AnsiStr: ' + string(PAnsiChar(AnsiStr)));
+
+      s:='';
+      for i := low(AnsiStr) to high(AnsiStr) do s:=s+':'+IntToHex(Ord(AnsiStr[i]));
+      log2({$I %LINENUM%},' Hex AnsiStr: '+s);
+
+      s:='';
+      for i := low(AnsiStr) to high(AnsiStr) do s:=s+':'+AnsiStr[i];
+      log2({$I %LINENUM%},' Char AnsiStr: '+s);
+
+      AnsiStr:=DelChars(AnsiStr,#0);
+
+      s:='';
+      for i := low(AnsiStr) to high(AnsiStr) do s:=s+':'+IntToHex(Ord(AnsiStr[i]));
+      log2({$I %LINENUM%},' Hex AnsiStr: '+s);
+
       Label1.Caption:='DDE data: '+string(PAnsiChar(AnsiStr));
     end
     else
