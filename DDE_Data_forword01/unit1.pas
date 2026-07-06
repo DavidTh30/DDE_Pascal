@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, Windows, Messages, dbugintf;
+  ExtCtrls, Windows, Messages, dbugintf, StrUtils;
 
 type
 
@@ -302,6 +302,7 @@ end;
 procedure TForm1.cmdMeasureSizeArrayOfAnsiCharClick(Sender: TObject);
 var
   Length_: DWORD;
+  i:integer;
   Buffer: array of AnsiChar;
   AnsiStr: AnsiString;
   s:string;
@@ -329,7 +330,26 @@ begin
     log2({$I %LINENUM%},' DdeQueryString Length_: '+Length_.ToString);
     log2({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString);
 
+    s:='';
+    for i := low(Buffer) to high(Buffer) do s:=s+':'+IntToHex(Ord(Buffer[i]));
+    log2({$I %LINENUM%},' Hex s: '+s);
+
+    s:='';
+    for i := low(Buffer) to high(Buffer) do s:=s+':'+Buffer[i];
+    log2({$I %LINENUM%},' Char s: '+s);
+
     SetString(AnsiStr, PAnsiChar(@Buffer[0]), Length(Buffer));
+
+    s:='';
+    for i := low(AnsiStr) to high(AnsiStr) do s:=s+':'+IntToHex(Ord(AnsiStr[i]));
+    log2({$I %LINENUM%},' Hex AnsiStr: '+s);
+
+    AnsiStr:=DelChars(AnsiStr,#0);
+
+    s:='';
+    for i := low(AnsiStr) to high(AnsiStr) do s:=s+':'+IntToHex(Ord(AnsiStr[i]));
+    log2({$I %LINENUM%},' Hex AnsiStr: '+s);
+
     s := string(AnsiStr);
     log2({$I %LINENUM%},' ResultString s: '+s);
   end
@@ -346,6 +366,7 @@ var
   Length_: DWORD;
   Buffer: array of Byte;
   AnsiStr: AnsiString;
+  i:integer;
   s:string;
 begin
 
@@ -370,8 +391,28 @@ begin
       log2({$I %LINENUM%},' DdeQueryString Length_: '+Length_.ToString);
       log2({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString);
 
+      s:='';
+      for i := low(Buffer) to high(Buffer) do s:=s+':'+IntToHex(Ord(Buffer[i]));
+      log2({$I %LINENUM%},' Hex Buffer: '+s);
+
+      s:='';
+      for i := low(Buffer) to high(Buffer) do s:=s+':'+chr(Buffer[i]);
+      log2({$I %LINENUM%},' Char Buffer: '+s);
+
       SetString(AnsiStr, PAnsiChar(@Buffer[0]), Length(Buffer));
+
+      s:='';
+      for i := low(AnsiStr) to high(AnsiStr) do s:=s+':'+IntToHex(Ord(AnsiStr[i]));
+      log2({$I %LINENUM%},' Hex AnsiStr: '+s);
+
+      AnsiStr:=DelChars(AnsiStr,#0);
+
+      s:='';
+      for i := low(AnsiStr) to high(AnsiStr) do s:=s+':'+IntToHex(Ord(AnsiStr[i]));
+      log2({$I %LINENUM%},' Hex AnsiStr: '+s);
+
       s := string(AnsiStr);
+
       log2({$I %LINENUM%},' ResultString s: '+s);
     end
     else
@@ -388,6 +429,7 @@ var
   Buffer: array of AnsiChar;
   AnsiStr: AnsiString;
   s:string;
+  i:integer;
 begin
   log2({$I %LINENUM%},' Measure Size Array Of AnsiChar -------------------------');
   Length_:=40;
@@ -408,6 +450,20 @@ begin
     Length_ := DdeQueryString(InstId, g_hszAppName, PAnsiChar(AnsiStr), Length(AnsiStr), CP_WINANSI);
     log2({$I %LINENUM%},' DdeQueryString Length_: '+Length_.ToString);
     log2({$I %LINENUM%},' Length(AnsiStr): '+Length(AnsiStr).ToString);
+
+    s:='';
+    for i := low(AnsiStr) to high(AnsiStr) do s:=s+':'+IntToHex(Ord(AnsiStr[i]));
+    log2({$I %LINENUM%},' Hex AnsiStr: '+s);
+
+    s:='';
+    for i := low(AnsiStr) to high(AnsiStr) do s:=s+':'+AnsiStr[i];
+    log2({$I %LINENUM%},' Char AnsiStr: '+s);
+
+    AnsiStr:=DelChars(AnsiStr,#0);
+
+    s:='';
+    for i := low(AnsiStr) to high(AnsiStr) do s:=s+':'+IntToHex(Ord(AnsiStr[i]));
+    log2({$I %LINENUM%},' Hex AnsiStr: '+s);
 
     s := string(AnsiStr);
     log2({$I %LINENUM%},' ResultString s: '+s);
