@@ -80,6 +80,34 @@ implementation
 {$R *.lfm}
 
 { TForm1 }
+
+function AnsiArrayToHex(const Arr: array of AnsiChar): string;
+var
+  i: Integer;
+  HexStr: string;
+begin
+  HexStr := '';
+  for i := Low(Arr) to High(Arr) do
+  begin
+    // Convert AnsiChar to its byte value, then to a 2-digit hex string
+    HexStr := HexStr + IntToHex(Ord(Arr[i]), 2);
+  end;
+  Result := HexStr;
+end;
+
+function TextToHex(const InputStr: string): string;
+begin
+  // Handle empty string edge case
+  if Length(InputStr) = 0 then
+    Exit('');
+
+  // Set the result length (each character requires 2 hex digits)
+  SetLength(Result, Length(InputStr) * 2);
+
+  // Convert buffer to hex string
+  BinToHex(PChar(InputStr), PChar(Result), Length(InputStr));
+end;
+
 procedure log(LINENUM_: integer; message_: string);
 begin
   SendDebug(LINENUM_.ToString+message_);
@@ -230,7 +258,7 @@ begin
         log({$I %LINENUM%},' Length(Form1.txtItem.Text): '+Length(Form1.txtItem.Text).ToString);
         i:=0;
         if Length(Buffer)>=1 then
-        if IntToHex(Ord(Buffer[High(Buffer)])) = '00' then i:=1;
+        if IntToHex(Ord(Buffer[High(Buffer)])) = '00' then i:=1;     //DelChars(AnsiStr,#0)
         SetString(AnsiStr, PAnsiChar(@Buffer[0]), Length(Buffer)-i);
         ////////////////////////////////////////////////
         s := string(AnsiStr);

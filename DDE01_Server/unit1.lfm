@@ -2,12 +2,15 @@ object Form1: TForm1
   Left = 405
   Height = 202
   Top = 118
-  Width = 648
+  Width = 604
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
   Caption = 'Server DDE'
   ClientHeight = 202
-  ClientWidth = 648
-  LCLVersion = '4.4.0.0'
+  ClientWidth = 604
   OnCreate = FormCreate
+  Position = poWorkAreaCenter
+  LCLVersion = '3.4.0.0'
   object Label2: TLabel
     Left = 208
     Height = 15
@@ -166,7 +169,7 @@ object Form1: TForm1
     OnClick = cmdDisconnectConversationClick
   end
   object txtValue: TEdit
-    Left = 480
+    Left = 456
     Height = 23
     Top = 112
     Width = 127
