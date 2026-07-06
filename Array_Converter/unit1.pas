@@ -15,10 +15,12 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
+    Button4: TButton;
     Memo1: TMemo;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
   private
 
   public
@@ -91,6 +93,10 @@ begin
   BufferByte[low(BufferByte)+3]:=Ord('A');
   BufferByte[low(BufferByte)+8]:=Ord('Z');
 
+  SetLength(s, Length(BufferByte)*2);
+  BinToHex(@BufferByte[0], PChar(s), Length(BufferByte));
+  log2({$I %LINENUM%},' Hex BufferByte: '+ s);
+
   log2({$I %LINENUM%},' BufferByte: "'+ string(BufferByte)+'"');
   SetString(s, PAnsiChar(@BufferByte[0]), Length(BufferByte));
   log2({$I %LINENUM%},' BufferByte: "'+ s+'"');
@@ -98,7 +104,7 @@ begin
   s := TEncoding.UTF8.GetString(BufferByte);
   log2({$I %LINENUM%},' BufferByte: "'+ s+'"');
   s := StringOf(BufferByte);
-  if low(s) > 0 then  s:= StringOfChar(#00, SizeOf(BufferByte));
+  if low(s) > 0 then  s:= StringOfChar(#00, Length(BufferByte)*2);
   BinToHex(@BufferByte[0], PChar(s), Length(BufferByte));
   log2({$I %LINENUM%},' Hex BufferByte: '+ s);
 
@@ -112,7 +118,45 @@ begin
   log2({$I %LINENUM%},' BufferByte: "'+ s+'"');
   s := StringOf(BufferByte);
   log2({$I %LINENUM%},' BufferByte: "'+ s+'"');
-  if low(s) > 0 then  s:= StringOfChar(#00, SizeOf(BufferByte));
+  if low(s) > 0 then  s:= StringOfChar(#00, Length(BufferByte)*2);
+  BinToHex(@BufferByte[0], PChar(s), Length(BufferByte));
+  log2({$I %LINENUM%},' Hex BufferByte: '+ s);
+  log2({$I %LINENUM%},'');
+
+  SetLength(BufferByte, 10); //clear / Initialize
+
+  BufferByte[low(BufferByte)]:=Ord('a');
+  BufferByte[low(BufferByte)+1]:=$0;
+  BufferByte[low(BufferByte)+2]:=0;
+  BufferByte[low(BufferByte)+3]:=Ord('A');
+  BufferByte[low(BufferByte)+8]:=Ord('Z');
+
+  SetLength(s, Length(BufferByte)*2);
+  BinToHex(@BufferByte[0], PChar(s), Length(BufferByte));
+  log2({$I %LINENUM%},' Hex BufferByte: '+ s);
+
+  log2({$I %LINENUM%},' BufferByte: "'+ string(BufferByte)+'"');
+  SetString(s, PAnsiChar(@BufferByte[0]), Length(BufferByte));
+  log2({$I %LINENUM%},' BufferByte: "'+ s+'"');
+  log2({$I %LINENUM%},' BufferByte: "'+ StringOf(BufferByte)+'"');
+  s := TEncoding.UTF8.GetString(BufferByte);
+  log2({$I %LINENUM%},' BufferByte: "'+ s+'"');
+  s := StringOf(BufferByte);
+  if low(s) > 0 then  s:= StringOfChar(#00, Length(BufferByte)*2);
+  BinToHex(@BufferByte[0], PChar(s), Length(BufferByte));
+  log2({$I %LINENUM%},' Hex BufferByte: '+ s);
+
+  BufferByte := BytesOf(DelChars(string(BufferByte),#0));
+
+  log2({$I %LINENUM%},' BufferByte: "'+ string(BufferByte)+'"');
+  SetString(s, PAnsiChar(@BufferByte[0]), Length(BufferByte));
+  log2({$I %LINENUM%},' BufferByte: "'+ s+'"');
+  log2({$I %LINENUM%},' BufferByte: "'+ StringOf(BufferByte)+'"');
+  s := TEncoding.UTF8.GetString(BufferByte);
+  log2({$I %LINENUM%},' BufferByte: "'+ s+'"');
+  s := StringOf(BufferByte);
+  log2({$I %LINENUM%},' BufferByte: "'+ s+'"');
+  if low(s) > 0 then  s:= StringOfChar(#00, Length(BufferByte)*2);
   BinToHex(@BufferByte[0], PChar(s), Length(BufferByte));
   log2({$I %LINENUM%},' Hex BufferByte: '+ s);
   log2({$I %LINENUM%},'');
@@ -226,6 +270,11 @@ begin
   log2({$I %LINENUM%},' Hex BufferStriung: '+ TextToHex(BufferStriung));
   log2({$I %LINENUM%},'');
 
+end;
+
+procedure TForm1.Button4Click(Sender: TObject);
+begin
+  Memo1.Clear;
 end;
 
 end.
