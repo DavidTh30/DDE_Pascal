@@ -16,11 +16,15 @@ type
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    Button5: TButton;
+    Button6: TButton;
     Memo1: TMemo;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
   private
 
   public
@@ -223,7 +227,7 @@ end;
 
 procedure TForm1.Button3Click(Sender: TObject);
 var
-  BufferStriung:string; // Static Array
+  BufferString:string; // Static Array
 begin
 
   //#00 => Char
@@ -237,37 +241,37 @@ begin
 
   log2({$I %LINENUM%},' Dynamic Array of String  ------------------------------------------');
 
-  Initialize(BufferStriung);   //not clear / not Initialize
+  Initialize(BufferString);   //not clear / not Initialize
 
   //Convert to Dynamic Array
-  SetLength(BufferStriung, 0); //not clear / not Initialize
-  SetLength(BufferStriung, 10);//not clear / not Initialize
-  BufferStriung:= StringOfChar(#00, 10); //clear / Initialize
+  SetLength(BufferString, 0); //not clear / not Initialize
+  SetLength(BufferString, 10);//not clear / not Initialize
+  BufferString:= StringOfChar(#00, 10); //clear / Initialize
 
-  BufferStriung[low(BufferStriung)]:=#00;
-  BufferStriung[low(BufferStriung)+1]:='a';
-  BufferStriung[low(BufferStriung)+2]:=char($0);
-  BufferStriung[low(BufferStriung)+3]:='A';
-  log2({$I %LINENUM%},' BufferStriung: "'+ BufferStriung+'"');
-  log2({$I %LINENUM%},' Hex BufferStriung: '+ TextToHex(BufferStriung));
+  BufferString[low(BufferString)]:=#00;
+  BufferString[low(BufferString)+1]:='a';
+  BufferString[low(BufferString)+2]:=char($0);
+  BufferString[low(BufferString)+3]:='A';
+  log2({$I %LINENUM%},' BufferString: "'+ BufferString+'"');
+  log2({$I %LINENUM%},' Hex BufferString: '+ TextToHex(BufferString));
 
-  BufferStriung:=DelChars(BufferStriung,#0);
+  BufferString:=DelChars(BufferString,#0);
 
-  log2({$I %LINENUM%},' BufferStriung: "'+ BufferStriung+'"');
-  log2({$I %LINENUM%},' Hex BufferStriung: '+ TextToHex(BufferStriung));
+  log2({$I %LINENUM%},' BufferString: "'+ BufferString+'"');
+  log2({$I %LINENUM%},' Hex BufferString: '+ TextToHex(BufferString));
 
-  BufferStriung:= StringOfChar(#00, 10);
-  BufferStriung[low(BufferStriung)]:='a';
-  BufferStriung[low(BufferStriung)+1]:=#00;
-  BufferStriung[low(BufferStriung)+2]:=char($0);
-  BufferStriung[low(BufferStriung)+3]:='A';
-  log2({$I %LINENUM%},' BufferStriung: "'+ BufferStriung+'"');
-  log2({$I %LINENUM%},' Hex BufferStriung: '+ TextToHex(BufferStriung));
+  BufferString:= StringOfChar(#00, 10);
+  BufferString[low(BufferString)]:='a';
+  BufferString[low(BufferString)+1]:=#00;
+  BufferString[low(BufferString)+2]:=char($0);
+  BufferString[low(BufferString)+3]:='A';
+  log2({$I %LINENUM%},' BufferString: "'+ BufferString+'"');
+  log2({$I %LINENUM%},' Hex BufferString: '+ TextToHex(BufferString));
 
-  BufferStriung:=DelChars(BufferStriung,#0);
+  BufferString:=DelChars(BufferString,#0);
 
-  log2({$I %LINENUM%},' BufferStriung: "'+ BufferStriung+'"');
-  log2({$I %LINENUM%},' Hex BufferStriung: '+ TextToHex(BufferStriung));
+  log2({$I %LINENUM%},' BufferString: "'+ BufferString+'"');
+  log2({$I %LINENUM%},' Hex BufferString: '+ TextToHex(BufferString));
   log2({$I %LINENUM%},'');
 
 end;
@@ -275,6 +279,61 @@ end;
 procedure TForm1.Button4Click(Sender: TObject);
 begin
   Memo1.Clear;
+end;
+
+procedure TForm1.Button5Click(Sender: TObject);
+var
+  BufferByte : array of Byte;  // DynamicArray
+  BufferString: string;
+  s:string;
+begin
+  log2({$I %LINENUM%},' String to Array of Byte ------------------------------------------');
+  SetLength(BufferString, 10);//not clear / not Initialize
+  BufferString:= StringOfChar(#00, 10); //clear / Initialize
+
+  BufferString[low(BufferString)]:='a';
+  BufferString[low(BufferString)+1]:=#00;
+  BufferString[low(BufferString)+2]:=char($0);
+  BufferString[low(BufferString)+3]:='A';
+
+  BufferByte := BytesOf(BufferString);
+  log2({$I %LINENUM%},' Length(BufferString) : '+Length(BufferString).ToString);
+  log2({$I %LINENUM%},' Length(BufferByte) : '+Length(BufferByte).ToString);
+
+  s := AnsiString(StringOf(BufferByte));
+  log2({$I %LINENUM%},' BufferByte: "'+ s +'"');
+  SetString(s, PAnsiChar(BufferByte), Length(BufferByte)); // Dynamic Array
+  log2({$I %LINENUM%},' BufferByte: "'+ s +'"');
+
+  SetLength(s, Length(BufferByte)*2);
+  BinToHex(@BufferByte[0], PChar(s), Length(BufferByte));
+  log2({$I %LINENUM%},' Hex BufferByte: "'+ s +'"');
+end;
+
+procedure TForm1.Button6Click(Sender: TObject);
+var
+  BufferAnsiChar : array of AnsiChar;  // DynamicArray
+  BufferString: string;
+  s:string;
+begin
+  log2({$I %LINENUM%},' String to Array of AnsiChar ------------------------------------------');
+  SetLength(BufferString, 10);//not clear / not Initialize
+  BufferString:= StringOfChar(#00, 10); //clear / Initialize
+
+  BufferString[low(BufferString)]:='a';
+  BufferString[low(BufferString)+1]:=#00;
+  BufferString[low(BufferString)+2]:=char($0);
+  BufferString[low(BufferString)+3]:='A';
+
+  BufferAnsiChar := BufferString.ToCharArray;
+  log2({$I %LINENUM%},' Length(BufferString) : '+Length(BufferString).ToString);
+  log2({$I %LINENUM%},' Length(BufferAnsiChar) : '+Length(BufferAnsiChar).ToString);
+
+  s := string(BufferAnsiChar);
+  log2({$I %LINENUM%},' BufferAnsiChar: "'+ s +'"'); // Static Array
+  SetString(s, PAnsiChar(BufferAnsiChar), Length(BufferAnsiChar)); // Dynamic Array
+  log2({$I %LINENUM%},' BufferAnsiChar: "'+ s +'"');
+  log2({$I %LINENUM%},' Hex BufferAnsiChar: "'+ AnsiArrayToHex(BufferAnsiChar) +'"');
 end;
 
 end.
