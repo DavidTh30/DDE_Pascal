@@ -39,6 +39,7 @@ object Form1: TForm1
     Width = 127
     TabOrder = 0
     Text = 'txtService'
+    OnEditingDone = txtServiceEditingDone
   end
   object txtTopic: TEdit
     Left = 272
@@ -47,6 +48,7 @@ object Form1: TForm1
     Width = 127
     TabOrder = 1
     Text = 'txtTopic'
+    OnEditingDone = txtTopicEditingDone
   end
   object txtItem: TEdit
     Left = 272
@@ -55,7 +57,7 @@ object Form1: TForm1
     Width = 127
     TabOrder = 2
     Text = 'MyItem'
-    OnChange = txtItemChange
+    OnEditingDone = txtItemEditingDone
   end
   object cmdAdvise: TButton
     Left = 416
@@ -82,6 +84,7 @@ object Form1: TForm1
     Width = 138
     Caption = 'uFmt / uType message'
     TabOrder = 5
+    OnEditingDone = CheckBox1EditingDone
   end
   object CheckBox2: TCheckBox
     Left = 8
@@ -90,6 +93,7 @@ object Form1: TForm1
     Width = 153
     Caption = 'XTYP_MONITOR message'
     TabOrder = 6
+    OnEditingDone = CheckBox2EditingDone
   end
   object Label1: TLabel
     Left = 416
@@ -123,7 +127,7 @@ object Form1: TForm1
     Width = 127
     TabOrder = 9
     Text = 'MyAdvise'
-    OnChange = txtItemChange
+    OnEditingDone = txtAdviseEditingDone
   end
   object Label5: TLabel
     Left = 208
@@ -175,7 +179,6 @@ object Form1: TForm1
     Width = 127
     TabOrder = 14
     Text = '2.22'
-    OnChange = txtItemChange
   end
   object Label6: TLabel
     Left = 416
@@ -183,5 +186,11 @@ object Form1: TForm1
     Top = 120
     Width = 31
     Caption = 'Value:'
+  end
+  object Timer1: TTimer
+    Interval = 500
+    OnTimer = Timer1Timer
+    Left = 376
+    Top = 8
   end
 end
