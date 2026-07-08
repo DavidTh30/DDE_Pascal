@@ -80,7 +80,7 @@ end;
 
 procedure TForm1.Button1Click(Sender: TObject);
 var
-  BufferByte : array of Byte;  // DynamicArray
+  BufferByte : array of Byte;  // Dynamic Array
   s:string;
 begin
 
@@ -118,7 +118,7 @@ begin
   BinToHex(@BufferByte[0], PChar(s), Length(BufferByte));
   log2({$I %LINENUM%},' Hex BufferByte: '+ s);
 
-  BufferByte := BytesOf(DelChars(string(BufferByte),#0));
+  BufferByte := BytesOf(DelChars(string(BufferByte),#0));  //Don't use with  Dynamic Array
 
   log2({$I %LINENUM%},' BufferByte: "'+ string(BufferByte)+'"');
   SetString(s, PAnsiChar(@BufferByte[0]), Length(BufferByte));
@@ -156,7 +156,7 @@ begin
   BinToHex(@BufferByte[0], PChar(s), Length(BufferByte));
   log2({$I %LINENUM%},' Hex BufferByte: '+ s);
 
-  BufferByte := BytesOf(DelChars(string(BufferByte),#0));
+  BufferByte := BytesOf(DelChars(string(BufferByte),#0)); //Don't use with  Dynamic Array
 
   log2({$I %LINENUM%},' BufferByte: "'+ string(BufferByte)+'"');
   SetString(s, PAnsiChar(@BufferByte[0]), Length(BufferByte));
@@ -204,7 +204,7 @@ begin
   log2({$I %LINENUM%},' BufferAnsiChar: "'+ s+'"');
   log2({$I %LINENUM%},' Hex BufferAnsiChar: '+ AnsiArrayToHex(BufferAnsiChar));
 
-  BufferAnsiChar:=DelChars(string(BufferAnsiChar),#0).ToCharArray;
+  BufferAnsiChar:=DelChars(string(BufferAnsiChar),#0).ToCharArray; //Don't use with  Dynamic Array
 
   SetString(s, PAnsiChar(BufferAnsiChar), Length(BufferAnsiChar)); // Dynamic Array
   log2({$I %LINENUM%},' BufferAnsiChar: "'+ s+'"');
@@ -222,7 +222,7 @@ begin
   log2({$I %LINENUM%},' BufferAnsiChar: "'+ s +'"');
   log2({$I %LINENUM%},' Hex BufferAnsiChar: '+ AnsiArrayToHex(BufferAnsiChar));
 
-  BufferAnsiChar:=DelChars(string(BufferAnsiChar),#0).ToCharArray;
+  BufferAnsiChar:=DelChars(string(BufferAnsiChar),#0).ToCharArray;  //Don't use with  Dynamic Array
 
   SetString(s, PAnsiChar(BufferAnsiChar), Length(BufferAnsiChar)); // Dynamic Array
   log2({$I %LINENUM%},' BufferAnsiChar: "'+ s+'"');
