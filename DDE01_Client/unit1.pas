@@ -419,14 +419,14 @@ function DdeCallback(uType, uFmt: UINT; hConv: HCONV; hsz1, hsz2: HSZ;
 var
   cb: DWORD;
   //HSZPAIR FAR *phszp;
-  phszp : ^HSZPAIR;
+  //phszp : ^HSZPAIR;
   lSize : Long;
   //sBuffer : String;
   sBuffer : array of Byte;
-  Ret : Long;
   ReceivedText: string;
   s:string;
 begin
+  SetLength(sBuffer, 0); //clear / Initialize
 
   Result := DDE_FNOTPROCESSED; //Result := 0;
 
@@ -449,9 +449,17 @@ begin
         // Allocate a buffer for the return data.
         //sBuffer := StringOfChar(chr(0), lSize - MAGIC_NUMBER); // String$(lSize - MAGIC_NUMBER, 0);
         SetLength(sBuffer, lSize);
+
         // Grab the data.
-        if lSize <= SizeOf(sBuffer) then lSize := DdeGetData(hData, @sBuffer[0], SizeOf(sBuffer), 0); //lSize := DdeGetData(hData, @sBuffer, Length(sBuffer), 0);
-        SetString(s, PAnsiChar(@sBuffer[0]), lSize);
+        //if lSize <= SizeOf(sBuffer) then lSize := DdeGetData(hData, @sBuffer, SizeOf(sBuffer), 0);   // Static array
+        //if lSize <= Length(sBuffer) then lSize := DdeGetData(hData, @sBuffer, Length(sBuffer), 0);   // Dynamic array
+        lSize := DdeGetData(hData, @sBuffer[0], Length(sBuffer), 0);
+        log({$I %LINENUM%},': Client: DdeGetData: '+lSize.ToString);
+
+        //SetString(s, PAnsiChar(@sBuffer[0]), lSize);
+        SetString(s, PAnsiChar(@sBuffer[0]), Length(sBuffer));
+        log({$I %LINENUM%},': Client: Length(s): '+Length(s).toString);
+
         form1.Label1.caption := 'DDE data: '+String(s); //form1.Label1.caption := 'DDE data: '+sBuffer;
       End;
       Result := DDE_FACK;
@@ -580,12 +588,10 @@ end;
 
 procedure TForm1.Button10Click(Sender: TObject);
 var
-  sValue : String;
   AnsiVal: AnsiString;
   DataPtr: PByte;
   DataLen: DWORD;
-  hData: HDDEDATA;
-  ResultData: HDDEDATA;
+
 begin
 
   AnsiVal := AnsiString(txtValue.Text) + #0;
@@ -767,13 +773,11 @@ begin
 end;
 
 procedure TForm1.Button5Click(Sender: TObject);
-var
-  i:integer;
 begin
 
   if hConv_ = 0 then
   begin
-    SendDebug(i.ToString+' Client: Connect bad hConv_: '+hConv_.ToString);
+    log({$I %LINENUM%},' Client: Connect bad hConv_: '+hConv_.ToString);
   end
   else
     begin
@@ -925,7 +929,6 @@ end;
 
 procedure TForm1.Button9Click(Sender: TObject);
 var
-  i:integer;
   s:AnsiString;
 begin
 
@@ -1130,6 +1133,7 @@ var
   txtTopic_:string;
   txtItem_:string;
 begin
+  SetLength(sBuffer, 0); //clear / Initialize
   txtService_:=txtService.Text;
   txtTopic_:=txtTopic.Text;
   txtItem_:= txtItem.Text;
@@ -1227,10 +1231,37 @@ var
   lTransVal : Long;
   txtService_:string;
   txtTopic_:string;
+  txtItem_:string;
 begin
   txtService_:=txtService.Text;
   txtTopic_:=txtTopic.Text;
-  DDE_CreateStringHandles(txtService_, txtTopic_, txtItem.Text);
+  txtItem_:= txtItem.Text;
+  DDE_CreateStringHandles(txtService_, txtTopic_, txtItem_);
+
+  log({$I %LINENUM%},' Client: Recheck string handles -------------------------');
+    Length_ := DdeQueryString(g_lInstID, g_hService, Buffer, SizeOf(Buffer), CP_WINANSI);
+    if Length_ > 0 then
+    begin
+      // ResultString now contains the string value
+      ResultString := string(Buffer);
+      log({$I %LINENUM%},' Client: ResultString g_hszAppName: '+ResultString);
+    end;
+
+    Length_ := DdeQueryString(g_lInstID, g_hTopic, Buffer, SizeOf(Buffer), CP_WINANSI);
+    if Length_ > 0 then
+    begin
+      // ResultString now contains the string value
+      ResultString := string(Buffer);
+      log({$I %LINENUM%},' Client: ResultString g_hszTopicName: '+ResultString);
+    end;
+
+    Length_ := DdeQueryString(g_lInstID, g_hItem, Buffer, SizeOf(Buffer), CP_WINANSI);
+    if Length_ > 0 then
+    begin
+      // ResultString now contains the string value
+      ResultString := string(Buffer);
+      log({$I %LINENUM%},' Client: ResultString g_hszItemName: '+ResultString);
+    end;
 
     // Open the conversation.
     If (g_hDDEConv = 0) Then
