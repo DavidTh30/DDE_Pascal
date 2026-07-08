@@ -1045,12 +1045,14 @@ begin
     log({$I %LINENUM%},' Client: DDE Initialize failed! Error code: '+ IntToHex(DdeInitializeResultCode_VB6, 8));
     log({$I %LINENUM%},' Client: g_lInstID: '+ g_lInstID.ToString);
     TranslateError();
+    bAdvise:=false;
     exit;
   end
   Else
   begin
     log({$I %LINENUM%},' Client: DDE Initialize Success: '+ IntToHex(DdeInitializeResultCode_VB6, 8));
     log({$I %LINENUM%},' Client: g_lInstID: '+ g_lInstID.ToString);
+    bAdvise:=false;
   End;
 
   cboItem.Enabled:=true;
@@ -1281,6 +1283,7 @@ begin
             // Enable the Advise Stop button and disable the Advise Start button.
             cmdStopAdv.Enabled := True;
             cmdStartAdv.Enabled := False;
+            bAdvise:=true;
         end
         Else
         begin
@@ -1315,12 +1318,15 @@ begin
             // Disable the Advise Stop button.
             cmdStopAdv.Enabled := False;
             cmdStartAdv.Enabled := True;
+            bAdvise:=false;
         end
 
         Else
         begin
-            log({$I %LINENUM%},' Client: DDE Advise Stop Failure.');
-
+           log({$I %LINENUM%},' Client: DDE Advise Stop Failure.');
+           cmdStopAdv.Enabled := False;
+           cmdStartAdv.Enabled := True;
+           bAdvise:=false;
         End;
 
     End;
@@ -1335,6 +1341,7 @@ begin
   begin
     SendDebug('Make sure we don''t have any open connections');
     DDE_Disconnect();
+    bAdvise:=false;
   End;
 
   // Tear down the initialized instance.
@@ -1353,6 +1360,7 @@ begin
     End;
 
     g_lInstID := 0;
+    bAdvise:=false;
   End;
 
   SendDebug('Client: -------------------- End DDE Test ------------------------');
