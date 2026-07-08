@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  Windows, Messages, DDEVar, dbugintf;
+  Windows, Messages, DDEVar, dbugintf, StrUtils;
 
 type
 
@@ -122,7 +122,7 @@ begin
         SetString(AnsiStr, PAnsiChar(DataPtr), DataSize);
 
         // 3. Convert to native Unicode string (for Delphi 2009 and newer)
-        Result := string(AnsiStr);
+        Result := DelChars(string(AnsiStr),#0);
       end;
     finally
       // 4. Always unlock the memory handle in a finally block
@@ -831,6 +831,7 @@ begin
     //Convert the buffer to a usable Pascal string format
     // (DDE data is traditionally transferred as ANSI/Null-terminated)
     SetString(s, PAnsiChar(@sBuffer[0]), DataSize);
+    s:=DelChars(s,#0);
 
     //DdeGetData(hDataQUOTE, @Buffer, SizeOf(Buffer), 0);
     //ShowMessage('Data received: ' + String(Buffer));
