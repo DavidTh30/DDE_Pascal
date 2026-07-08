@@ -34,8 +34,8 @@ const
 var
   uFmt_uType_message:boolean;
   XTYP_MONITOR_message:boolean;
-  DDE_data:string;
-  Server_data:string;
+  DDE_data: ^TLabel;
+  Server_data:^TEdit;
   bRunning : Boolean;         // Server running flag.
   g_hszAppName, g_hszTopicName, g_hszItemName, g_hszItemAdvise: HSZ;
   InstId: DWORD;
@@ -118,11 +118,11 @@ var
   phszp : ^HSZPAIR;
   lSize : Long;
   //sBuffer : String;
-  sBuffer : array of Byte;
-  Buffer: array of AnsiChar;
-  AnsiStr: AnsiString;
+  BufferByte : array of Byte;
+  BufferAnsiChar: array of AnsiChar;
+  BufferAnsiString: AnsiString;
+  BufferString: string;
   Ret : Long;
-  ReceivedText: string;
   s:string;
   i:integer;
 begin
@@ -142,18 +142,19 @@ begin
     begin
       log({$I %LINENUM%},': Server: XTYP_ADVDATA');
       lSize := DdeGetData(hData, nil, 0, 0);
-      log({$I %LINENUM%},' lSize: '+lSize.ToString);
+      log({$I %LINENUM%},' Server: lSize: '+lSize.ToString);
       If (lSize > 0) Then
       begin
         // Allocate a buffer for the return data.
         //sBuffer := StringOfChar(chr(0), lSize - MAGIC_NUMBER); // String$(lSize - MAGIC_NUMBER, 0);
-        SetLength(sBuffer, lSize);
+        SetLength(BufferByte, lSize);
         // Grab the data.
-        if lSize <= SizeOf(sBuffer) then lSize := DdeGetData(hData, @sBuffer[0], SizeOf(sBuffer), 0); //lSize := DdeGetData(hData, @sBuffer, Length(sBuffer), 0);
-        SetString(s, PAnsiChar(@sBuffer[0]), lSize);
-        DDE_data:=String(s); //DDE_data := sBuffer;
-      End;
+        lSize := DdeGetData(hData, @BufferByte[0], Length(BufferByte), 0); //lSize := DdeGetData(hData, @sBuffer, SizeOf(sBuffer), 0);
+        SetString(s, PAnsiChar(@BufferByte[0]), lSize);
+        DDE_data^.Caption:=String(s);
+      end;
       Result := DDE_FACK;
+      log({$I %LINENUM%},': Server: Result := DDE_FACK');
     end;
     if (uType = XTYP_ADVSTART) then
     begin
@@ -168,6 +169,7 @@ begin
       log({$I %LINENUM%},': Server: XTYP_CONNECT');
       Result := 1;
       Result := DDE_FACK;
+      log({$I %LINENUM%},': Server: Result := DDE_FACK');
     end;
     if (uType = XTYP_CONNECT_CONFIRM) then
     begin
@@ -185,9 +187,33 @@ begin
     begin
       log({$I %LINENUM%},': Server: XTYP_EXECUTE');
       lSize := DdeGetData(hData, nil, 0, 0);
-      SetLength(Buffer, 0); // Resets all elements to 0
-      SetLength(Buffer, lSize+1);
-      DdeGetData(hData, @Buffer[0], Length(Buffer), 0);
+      SetLength(BufferAnsiChar, 0);
+      SetLength(BufferAnsiChar, lSize+1);
+      BufferString:= StringOfChar(#00, lSize+1); //clear / Initialize  Resets all elements to 0
+
+      DdeGetData(hData, @BufferAnsiChar[0], Length(BufferAnsiChar), 0);
+      BufferString:=string(BufferAnsiChar);
+      BufferString:=UpCase(BufferString);
+      //Result := DDE_FNOTPROCESSED  // Did the client specify a command that server not understa
+      Result := DDE_FACK;  // Did the client specify a command that server understand
+
+      //If (sBuffer := DDE_COMMAND1) Then
+      //begin
+      //  frmDDEServer.WindowState = vbMaximized
+      //end
+      //else if (sBuffer := DDE_COMMAND2) Then
+      //begin
+      //  frmDDEServer.WindowState := vbMinimized
+      //end
+      //else If (sBuffer = DDE_COMMAND3) Then
+      //begin
+      //  frmDDEServer.WindowState := vbNormal
+      //end
+      //Else
+      //begin
+      //  Result := DDE_FNOTPROCESSED
+      //end;
+      log({$I %LINENUM%},': Server: Result := DDE_FACK');
     end;
     if (uType = XTYP_MASK) then
     begin
@@ -200,11 +226,43 @@ begin
     end;
     if (uType = XTYP_POKE) then
     begin
-      log({$I %LINENUM%},': Server: XTYP_POKE');
+      log({$I %LINENUM%},': Server: XTYP_POKE');    //txtItem_
+      lSize := DdeQueryString(InstId, hsz2, nil, 0, CP_WINANSI);
 
-      // Must return DDE_FACK to tell the client the server accepted it
-      Result := DDE_FACK;
+      if lSize > 0 then
+      begin
+        SetLength(BufferAnsiChar, 0); //clear / Initialize
+        SetLength(BufferAnsiChar, lSize+1); //clear / Initialize
+        lSize := DdeQueryString(InstId, hsz2, @BufferAnsiChar[0], Length(BufferAnsiChar), CP_WINANSI);
 
+        SetString(s, PAnsiChar(BufferAnsiChar), Length(BufferAnsiChar)); // Dynamic Array
+        s:=DelChars(s,#0);
+
+        log({$I %LINENUM%},': Server: s= "'+s+'"');
+        log({$I %LINENUM%},': Server: txtItem_= "'+txtItem_+'"');
+        If (s = txtItem_) Then
+        begin
+          lSize := DdeGetData(hData, nil, 0, 0);
+          SetLength(BufferAnsiChar, 0);
+          SetLength(BufferAnsiChar, lSize+1);
+          BufferString:= StringOfChar(#00, lSize+1); //clear / Initialize  Resets all elements to 0
+
+          DdeGetData(hData, @BufferAnsiChar[0], Length(BufferAnsiChar), 0);
+
+          SetString(s, PAnsiChar(BufferAnsiChar), Length(BufferAnsiChar)); // Dynamic Array
+          Server_data^.Text:=s;
+          // Must return DDE_FACK to tell the client the server accepted it
+          Result := DDE_FACK;
+          log({$I %LINENUM%},': Server: Result := DDE_FACK');
+        end
+        else
+        begin
+          // Must return DDE_FACK to tell the client the server not accepted it
+         Result := DDE_FNOTPROCESSED;
+         log({$I %LINENUM%},': Server: Result := DDE_FNOTPROCESSED');
+        end;
+
+    end;
     end;
     if (uType = XTYP_REGISTER) then
     begin
@@ -214,24 +272,33 @@ begin
     begin
       log({$I %LINENUM%},': Server: XTYP_REQUEST');
       lSize := DdeQueryString(InstId, hsz2, nil, 0, CP_WINANSI);
-      log({$I %LINENUM%},' lSize: '+lSize.ToString);
+      log({$I %LINENUM%},' Server: lSize: '+lSize.ToString);
+      SetLength(BufferAnsiChar, 0); //clear / Initialize
+      SetLength(BufferAnsiChar, lSize); //clear / Initialize
+
       if lSize > 0 then
       begin
-        SetLength(Buffer, 0); // Resets all elements to 0
-        SetLength(Buffer, lSize+1);
-        log({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString);
-        lSize := DdeQueryString(InstId, hsz2, @Buffer[0], Length(Buffer), CP_WINANSI);
-        log({$I %LINENUM%},' Length(Buffer): '+Length(Buffer).ToString);
-        log({$I %LINENUM%},' Length(txtItem_): '+Length(txtItem_).ToString);
-        i:=0;
-        if Length(Buffer)>=1 then
-        if IntToHex(Ord(Buffer[High(Buffer)])) = '00' then i:=1;     //DelChars(AnsiStr,#0)
-        SetString(AnsiStr, PAnsiChar(@Buffer[0]), Length(Buffer)-i);
+        SetLength(BufferAnsiChar, 0); // Resets all elements to 0
+        SetLength(BufferAnsiChar, lSize+1);
+        log({$I %LINENUM%},' Server: Length(Buffer): '+Length(BufferAnsiChar).ToString);
+        lSize := DdeQueryString(InstId, hsz2, @BufferAnsiChar[0], Length(BufferAnsiChar), CP_WINANSI);
+        log({$I %LINENUM%},' Server: Length(Buffer): '+Length(BufferAnsiChar).ToString);
+        log({$I %LINENUM%},' Server: Length(txtItem_): '+Length(txtItem_).ToString);
+
+        //i:=0;
+        //if Length(BufferAnsiChar)>=1 then
+        //if IntToHex(Ord(BufferAnsiChar[High(BufferAnsiChar)])) = '00' then i:=1;
+        BufferAnsiChar:=DelChars(string(BufferAnsiChar),#0).ToCharArray;
+
+        //SetString(BufferAnsiString, PAnsiChar(@BufferAnsiChar[0]), Length(BufferAnsiChar)-i);
+        SetString(BufferAnsiString, PAnsiChar(@BufferAnsiChar[0]), Length(BufferAnsiChar));
+
         ////////////////////////////////////////////////
-        s := string(AnsiStr);
-        //log({$I %LINENUM%},' s := string(AnsiStr) Length(s): '+Length(s).ToString);
+        SetString(s, PAnsiChar(BufferAnsiChar), Length(BufferAnsiChar)); // Dynamic Array
+        s:=DelChars(s,#0);
+        //log({$I %LINENUM%},' Server: s := string(AnsiStr) Length(s): '+Length(s).ToString);
         //s:=s;
-        //log({$I %LINENUM%},' s:=s Length(s): '+Length(s).ToString);
+        //log({$I %LINENUM%},' Server: s:=s Length(s): '+Length(s).ToString);
         //////////////////////////////////////////////////
         //s:='';
         //for i:=0 to High(Buffer) do
@@ -250,14 +317,14 @@ begin
         //s:='';
         //for i:=low(Form1.txtItem.Text) to High(Form1.txtItem.Text) do
         //s:=s+':'+IntToHex(Ord(Form1.txtItem.Text[i]));
-        //log({$I %LINENUM%},' Server: s: '+s);
+        //log({$I %LINENUM%},' Server: Server: s: '+s);
         /////////////////////////////////////////////////
-        //log({$I %LINENUM%},' Length(s): '+Length(s).ToString);
-        //log({$I %LINENUM%},' Length(Form1.txtItem.Text): '+Length(Form1.txtItem.Text).ToString);
+        //log({$I %LINENUM%},' Server: Length(s): '+Length(s).ToString);
+        //log({$I %LINENUM%},' Server: Length(Form1.txtItem.Text): '+Length(Form1.txtItem.Text).ToString);
         //////////////////////////////////////////////////
         If (s = txtItem_) Then
         begin
-          s:=Server_data;
+          s:=Server_data^.Text;
           //DdeCreateDataHandle
           //idInst: Instance Identifier ที่ได้จากการเรียก
           //DdeInitializepSrc: พอยน์เตอร์ไปยังบัฟเฟอร์ที่เก็บข้อมูล
@@ -267,10 +334,12 @@ begin
           //wFmt: รูปแบบข้อมูล (เช่น CF_TEXT)afCmd: ค่าแฟล็ก เช่น
           //HDATA_APPOWNED (ระบุว่าแอปพลิเคชันเป็นเจ้าของออบเจ็กต์นี้)
           Result := DdeCreateDataHandle(InstId, PByte(PAnsiChar(s)), Length(s), 0, hsz2, CF_TEXT, 0);
+          log({$I %LINENUM%},': Server: Result := '+Result.ToString);
         end
         else
         begin
           Result := DDE_FNOTPROCESSED;
+          log({$I %LINENUM%},': Server: Result := DDE_FNOTPROCESSED');
         end;
       end;
     end;
@@ -293,6 +362,7 @@ begin
       log({$I %LINENUM%},': Server: XTYP_XACT_COMPLETE');
       // Must return DDE_FACK to acknowledge success
       Result := DDE_FACK;
+      log({$I %LINENUM%},': Server: Result := DDE_FACK');
     end;
   end;
 end;

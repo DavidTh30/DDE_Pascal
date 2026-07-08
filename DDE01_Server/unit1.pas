@@ -29,7 +29,6 @@ type
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
-    Timer1: TTimer;
     txtItem: TEdit;
     txtAdvise: TEdit;
     txtValue: TEdit;
@@ -46,11 +45,12 @@ type
     procedure cmdMeasureSizeStringClick(Sender: TObject);
     procedure cmdUninitializeClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure txtAdviseEditingDone(Sender: TObject);
     procedure txtItemEditingDone(Sender: TObject);
     procedure txtServiceEditingDone(Sender: TObject);
     procedure txtTopicEditingDone(Sender: TObject);
+    procedure txtValueEditingDone(Sender: TObject);
   private
 
   public
@@ -72,18 +72,27 @@ begin
   hConv_:=0;
   hDdeServiceName:=0;
 
-  DDE_data:='';
-  Server_data:=txtValue.Text;
+  new(DDE_data);
+  DDE_data^:=Label1;
+
+  New(Server_data);
+  Server_data^:=txtValue;
+
   txtService_:=txtService.Text;
   txtTopic_:=txtTopic.Text;
   txtItem_:=txtItem.Text;
   txtAdvise_:=txtAdvise.Text;
 end;
 
-procedure TForm1.Timer1Timer(Sender: TObject);
+procedure TForm1.FormDestroy(Sender: TObject);
 begin
-  Label1.caption := 'DDE data: '+DDE_data;
+  Dispose(DDE_data);
+  if DDE_data <> nil then DDE_data^:=nil;   //Assigned(Ted)  //Assigned(MyPointer)
+
+  Dispose(Server_data);
+  if Server_data <> nil then Server_data^:=nil;   //Assigned(Ted)  //Assigned(MyPointer)
 end;
+
 
 procedure TForm1.txtAdviseEditingDone(Sender: TObject);
 begin
@@ -105,6 +114,11 @@ begin
   txtTopic_:=txtTopic.Text;
 end;
 
+procedure TForm1.txtValueEditingDone(Sender: TObject);
+begin
+
+end;
+
 procedure TForm1.cmdAdviseClick(Sender: TObject);
 begin
   // We have to initiate a DDEPostAdvise() in order to let all interested clients
@@ -112,11 +126,11 @@ begin
   If (DdePostAdvise(InstId, 0, 0)) Then
   begin
     //log({$I %LINENUM%},' DDE Disconnect Success.: '+ IntToHex(DdeInitializeResultCode_VB6, 8));
-    log({$I %LINENUM%},' DdePostAdvise() Success.');
+    log({$I %LINENUM%},' Server: DdePostAdvise() Success.');
   end
   Else
   begin
-    log({$I %LINENUM%},' DdePostAdvise() Failed.');
+    log({$I %LINENUM%},' Server: DdePostAdvise() Failed.');
   End;
 end;
 
@@ -133,15 +147,15 @@ end;
 procedure TForm1.cmdCheckConversationClick(Sender: TObject);
 begin
 
-  log({$I %LINENUM%},' Open the conversation/connect ----------------');
+  log({$I %LINENUM%},' Server: Open the conversation/connect ----------------');
     hConv_ := DdeConnect(InstId, g_hszAppName, g_hszTopicName, nil);
     if hConv_ > 0 then
     begin
-      log({$I %LINENUM%},' New conversation/connect  hConv_: '+ IntToHex(hConv_, 8));
+      log({$I %LINENUM%},' Server: New conversation/connect  hConv_: '+ IntToHex(hConv_, 8));
     end
     else
     begin
-      log({$I %LINENUM%},' No Dde Server  hConv_: '+ IntToHex(hConv_, 8));
+      log({$I %LINENUM%},' Server: No Dde Server  hConv_: '+ IntToHex(hConv_, 8));
       TranslateError();
     end;
 end;
@@ -150,7 +164,7 @@ procedure TForm1.cmdCreateServiceNameClick(Sender: TObject);
 begin
   if (hConv_ > 0) then
   begin
-    log({$I %LINENUM%},' Dde Server already have hConv_: '+ IntToHex(hConv_, 8));
+    log({$I %LINENUM%},' Server: Dde Server already have hConv_: '+ IntToHex(hConv_, 8));
     exit;
   end;
   if (hDdeServiceName = 0) then
@@ -158,19 +172,19 @@ begin
     hDdeServiceName:=DdeNameService(InstId, g_hszAppName, 0, DNS_REGISTER);
     If (hDdeServiceName>0) Then
     begin
-      log({$I %LINENUM%},' DdeNameService Success  hDdeServiceName: '+ IntToHex(hDdeServiceName, 8));
+      log({$I %LINENUM%},' Server: DdeNameService Success  hDdeServiceName: '+ IntToHex(hDdeServiceName, 8));
       // Set the server running flag.
       bRunning := True;
     End
     else
     begin
-      log({$I %LINENUM%},' DdeNameService Failure  hDdeServiceName: '+ IntToHex(hDdeServiceName, 8));
+      log({$I %LINENUM%},' Server: DdeNameService Failure  hDdeServiceName: '+ IntToHex(hDdeServiceName, 8));
       TranslateError();
     end;
   end
   else
   begin
-    log({$I %LINENUM%},' DdeNameService already create  hDdeServiceName: '+ IntToHex(hDdeServiceName, 8));
+    log({$I %LINENUM%},' Server: DdeNameService already create  hDdeServiceName: '+ IntToHex(hDdeServiceName, 8));
   end;
 end;
 
@@ -181,11 +195,11 @@ begin
   g_hszItemName := DdeCreateStringHandle(InstId, PAnsiChar(txtItem.Text), CP_WINANSI);
   g_hszItemAdvise := DdeCreateStringHandle(InstId, PAnsiChar(txtAdvise.Text), CP_WINANSI);
 
-  log({$I %LINENUM%},' DdeCreateStringHandle------------------------');
-  log({$I %LINENUM%},' DdeCreateStringHandle  g_hszAppName: '+ IntToHex(g_hszAppName, 8));
-  log({$I %LINENUM%},' DdeCreateStringHandle  g_hszTopicName: '+ IntToHex(g_hszTopicName, 8));
-  log({$I %LINENUM%},' DdeCreateStringHandle  g_hszItemName: '+ IntToHex(g_hszItemName, 8));
-  log({$I %LINENUM%},' DdeCreateStringHandle  g_hszItemAdvise: '+ IntToHex(g_hszItemAdvise, 8));
+  log({$I %LINENUM%},' Server: DdeCreateStringHandle------------------------');
+  log({$I %LINENUM%},' Server: DdeCreateStringHandle  g_hszAppName: '+ IntToHex(g_hszAppName, 8));
+  log({$I %LINENUM%},' Server: DdeCreateStringHandle  g_hszTopicName: '+ IntToHex(g_hszTopicName, 8));
+  log({$I %LINENUM%},' Server: DdeCreateStringHandle  g_hszItemName: '+ IntToHex(g_hszItemName, 8));
+  log({$I %LINENUM%},' Server: DdeCreateStringHandle  g_hszItemAdvise: '+ IntToHex(g_hszItemAdvise, 8));
 end;
 
 procedure TForm1.cmdDdeInitializeClick(Sender: TObject);
@@ -201,17 +215,17 @@ begin
     );
     if (DdeInitializeResultCode = DMLERR_NO_ERROR) and (InstId>0) then
     begin
-      log({$I %LINENUM%},' DDE Initialize Success  InstId: '+ IntToHex(InstId, 8));
+      log({$I %LINENUM%},' Server: DDE Initialize Success  InstId: '+ IntToHex(InstId, 8));
     end
     else
     begin
-      log({$I %LINENUM%},' DDE Initialize Failure  DdeInitializeResultCode: '+ DdeInitializeResultCode.ToString);
+      log({$I %LINENUM%},' Server: DDE Initialize Failure  DdeInitializeResultCode: '+ DdeInitializeResultCode.ToString);
       TranslateError();
     end ;
   end
   else
   begin
-    log({$I %LINENUM%},' DDE already initialize  InstId: '+ IntToHex(InstId, 8));
+    log({$I %LINENUM%},' Server: DDE already initialize  InstId: '+ IntToHex(InstId, 8));
   end;
 end;
 
@@ -221,11 +235,11 @@ begin
   begin
     If DdeDisconnect(hConv_) Then
     begin
-      log({$I %LINENUM%},' DDE Disconnect Success.  hConv_: '+ IntToHex(hConv_, 8));
+      log({$I %LINENUM%},' Server: DDE Disconnect Success.  hConv_: '+ IntToHex(hConv_, 8));
     end
     Else
     begin
-      log({$I %LINENUM%},' DDE Disconnect Failure.  hConv_: '+ IntToHex(hConv_, 8));
+      log({$I %LINENUM%},' Server: DDE Disconnect Failure.  hConv_: '+ IntToHex(hConv_, 8));
       TranslateError();
     End;
     hConv_ := 0;
@@ -247,11 +261,11 @@ begin
     SetLength(AnsiStr, Length_+1);
     Length_ := DdeQueryString(InstId, g_hszAppName, PAnsiChar(AnsiStr), Length(AnsiStr), CP_WINANSI);
     s := string(AnsiStr);
-    log({$I %LINENUM%},' ResultString s: '+s);
+    log({$I %LINENUM%},' Server: ResultString s: '+s);
   end
   else
   begin
-    log({$I %LINENUM%},' String handle not create');
+    log({$I %LINENUM%},' Server: String handle not create');
   end;
 
   Length_ := DdeQueryString(InstId, g_hszTopicName, nil, 0, CP_WINANSI);
@@ -261,7 +275,7 @@ begin
     SetLength(AnsiStr, Length_+1);
     Length_ := DdeQueryString(InstId, g_hszTopicName, PAnsiChar(AnsiStr), Length(AnsiStr), CP_WINANSI);
     s := string(AnsiStr);
-    log({$I %LINENUM%},' ResultString s: '+s);
+    log({$I %LINENUM%},' Server: ResultString s: '+s);
   end
   else
   begin
@@ -275,11 +289,11 @@ begin
     SetLength(AnsiStr, Length_+1);
     Length_ := DdeQueryString(InstId, g_hszItemName, PAnsiChar(AnsiStr), Length(AnsiStr), CP_WINANSI);
     s := string(AnsiStr);
-    log({$I %LINENUM%},' ResultString s: '+s);
+    log({$I %LINENUM%},' Server: ResultString s: '+s);
   end
   else
   begin
-    log({$I %LINENUM%},' String handle not create');
+    log({$I %LINENUM%},' Server: String handle not create');
   end;
 
   Length_ := DdeQueryString(InstId, g_hszItemAdvise, nil, 0, CP_WINANSI);
@@ -289,11 +303,11 @@ begin
     SetLength(AnsiStr, Length_+1);
     Length_ := DdeQueryString(InstId, g_hszItemAdvise, PAnsiChar(AnsiStr), Length(AnsiStr), CP_WINANSI);
     s := string(AnsiStr);
-    log({$I %LINENUM%},' ResultString s: '+s);
+    log({$I %LINENUM%},' Server: ResultString s: '+s);
   end
   else
   begin
-    log({$I %LINENUM%},' String handle not create');
+    log({$I %LINENUM%},' Server: String handle not create');
   end;
 
   SetLength(AnsiStr, 0);  // Free/Clean up memory
@@ -305,11 +319,11 @@ begin
   begin
     If DdeDisconnect(hConv_) Then
     begin
-      log({$I %LINENUM%},' DDE Disconnect Success.  hConv_: '+ IntToHex(hConv_, 8));
+      log({$I %LINENUM%},' Server: DDE Disconnect Success.  hConv_: '+ IntToHex(hConv_, 8));
     end
     Else
     begin
-      log({$I %LINENUM%},' DDE Disconnect Failure.  hConv_: '+ IntToHex(hConv_, 8));
+      log({$I %LINENUM%},' Server: DDE Disconnect Failure.  hConv_: '+ IntToHex(hConv_, 8));
       TranslateError();
     End;
     hConv_ := 0;
@@ -322,23 +336,23 @@ begin
     begin
       DdeNameService(InstId, g_hszAppName, 0, DNS_UNREGISTER);
       hDdeServiceName:=0;
-      log({$I %LINENUM%},' DdeNameService DNS_UNREGISTER -------------------------');
+      log({$I %LINENUM%},' Server: DdeNameService DNS_UNREGISTER -------------------------');
     End;
     DdeFreeStringHandle(InstId, g_hszAppName);
     DdeFreeStringHandle(InstId, g_hszTopicName);
     DdeFreeStringHandle(InstId, g_hszItemName);
     DdeFreeStringHandle(InstId, g_hszItemAdvise);
-    log({$I %LINENUM%},' DdeFreeStringHandle -------------------------');
+    log({$I %LINENUM%},' Server: DdeFreeStringHandle -------------------------');
 
     If DdeUninitialize(InstId) Then
     begin
-      log({$I %LINENUM%},' DDE Uninitialize Success: '+ IntToHex(DdeInitializeResultCode, 8));
-      log({$I %LINENUM%},' InstId: '+ InstId.ToString);
+      log({$I %LINENUM%},' Server: DDE Uninitialize Success: '+ IntToHex(DdeInitializeResultCode, 8));
+      log({$I %LINENUM%},' Server: InstId: '+ InstId.ToString);
     end
     Else
     begin
-      log({$I %LINENUM%},' DDE Uninitialize Failure. '+ IntToHex(DdeInitializeResultCode, 8));
-      log({$I %LINENUM%},' InstId: '+ IntToHex(hConv_, 8));
+      log({$I %LINENUM%},' Server: DDE Uninitialize Failure. '+ IntToHex(DdeInitializeResultCode, 8));
+      log({$I %LINENUM%},' Server: InstId: '+ IntToHex(hConv_, 8));
       TranslateError();
     End;
 
@@ -346,11 +360,11 @@ begin
   End
   else
   begin
-    log({$I %LINENUM%},' DDE Not Initialize  InstId: '+ IntToHex(InstId, 8));
+    log({$I %LINENUM%},' Server: DDE Not Initialize  InstId: '+ IntToHex(InstId, 8));
   end;
 
 
-  log({$I %LINENUM%},' DdeUninitialize -------------------------');
+  log({$I %LINENUM%},' Server: DdeUninitialize -------------------------');
 end;
 
 end.
