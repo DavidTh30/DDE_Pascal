@@ -273,6 +273,10 @@ begin
 
           SetString(s, PAnsiChar(BufferAnsiChar), Length(BufferAnsiChar)); // Dynamic Array
           Server_data^.Text:=s;
+          DdeFreeStringHandle(InstId, g_hszValue);
+          g_hszValue := DdeCreateStringHandle(InstId, PAnsiChar(Server_data^.Text), CP_WINANSI);
+          DdePostAdvise(InstId, 0, 0);
+
           // Must return DDE_FACK to tell the client the server accepted it
           Result := DDE_FACK;
           log({$I %LINENUM%},': Server: Result := DDE_FACK');
