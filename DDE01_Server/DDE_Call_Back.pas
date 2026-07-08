@@ -159,7 +159,9 @@ begin
     begin
       log({$I %LINENUM%},': Server: XTYP_ADVREQ');
 
-          s:=Server_data^.Text;
+          s:=Server_data^.Text+#0;
+          log({$I %LINENUM%},' Server: Length(Server_data): '+Length(s).ToString);
+
           //DdeCreateDataHandle
           //idInst: Instance Identifier ที่ได้จากการเรียก
           //DdeInitializepSrc: พอยน์เตอร์ไปยังบัฟเฟอร์ที่เก็บข้อมูล
@@ -349,7 +351,7 @@ begin
         //////////////////////////////////////////////////
         If (s = txtItem_) Then
         begin
-          s:=Server_data^.Text;
+          s:=Server_data^.Text+#0;
           //DdeCreateDataHandle
           //idInst: Instance Identifier ที่ได้จากการเรียก
           //DdeInitializepSrc: พอยน์เตอร์ไปยังบัฟเฟอร์ที่เก็บข้อมูล
