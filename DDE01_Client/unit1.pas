@@ -275,6 +275,10 @@ begin
     g_hItem := DdeCreateStringHandle(g_lInstID, PAnsiChar(sTheItem), CP_WINANSI);
   End;
 
+  log({$I %LINENUM%},' After create string handles -------------------------');
+  log({$I %LINENUM%},' Client: g_hService: '+ g_hService.ToString);
+  log({$I %LINENUM%},' Client: g_hTopic: '+ g_hTopic.ToString);
+  log({$I %LINENUM%},' Client: g_hItem: '+ g_hItem.ToString);
 End;
 
 Function DDE_Connect() : Long;
