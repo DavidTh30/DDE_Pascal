@@ -15,7 +15,6 @@ type
   TForm1 = class(TForm)
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
-    cmdAdvise: TButton;
     cmdCheckConversation: TButton;
     cmdCreateServiceName: TButton;
     cmdDdeInitialize: TButton;
@@ -36,7 +35,6 @@ type
     txtTopic: TEdit;
     procedure CheckBox1EditingDone(Sender: TObject);
     procedure CheckBox2EditingDone(Sender: TObject);
-    procedure cmdAdviseClick(Sender: TObject);
     procedure cmdCheckConversationClick(Sender: TObject);
     procedure cmdCreateServiceNameClick(Sender: TObject);
     procedure cmdDdeCreateStringHandleClick(Sender: TObject);
@@ -115,11 +113,6 @@ begin
 end;
 
 procedure TForm1.txtValueEditingDone(Sender: TObject);
-begin
-
-end;
-
-procedure TForm1.cmdAdviseClick(Sender: TObject);
 begin
   // We have to initiate a DDEPostAdvise() in order to let all interested clients
   // know that something has changed.

@@ -60,22 +60,13 @@ object Form1: TForm1
     Text = 'MyItem'
     OnEditingDone = txtItemEditingDone
   end
-  object cmdAdvise: TButton
-    Left = 416
-    Height = 23
-    Top = 72
-    Width = 120
-    Caption = 'Post Advise'
-    TabOrder = 3
-    OnClick = cmdAdviseClick
-  end
   object cmdDdeInitialize: TButton
     Left = 8
     Height = 23
     Top = 8
     Width = 168
     Caption = 'DdeInitialize'
-    TabOrder = 4
+    TabOrder = 3
     OnClick = cmdDdeInitializeClick
   end
   object CheckBox1: TCheckBox
@@ -84,7 +75,7 @@ object Form1: TForm1
     Top = 40
     Width = 138
     Caption = 'uFmt / uType message'
-    TabOrder = 5
+    TabOrder = 4
     OnEditingDone = CheckBox1EditingDone
   end
   object CheckBox2: TCheckBox
@@ -93,15 +84,8 @@ object Form1: TForm1
     Top = 64
     Width = 153
     Caption = 'XTYP_MONITOR message'
-    TabOrder = 6
+    TabOrder = 5
     OnEditingDone = CheckBox2EditingDone
-  end
-  object Label1: TLabel
-    Left = 416
-    Height = 15
-    Top = 48
-    Width = 51
-    Caption = 'DDE data:'
   end
   object cmdUninitialize: TButton
     Left = 8
@@ -109,7 +93,7 @@ object Form1: TForm1
     Top = 168
     Width = 168
     Caption = 'Uninitialize'
-    TabOrder = 7
+    TabOrder = 6
     OnClick = cmdUninitializeClick
   end
   object cmdDdeCreateStringHandle: TButton
@@ -118,7 +102,7 @@ object Form1: TForm1
     Top = 88
     Width = 168
     Caption = 'DdeCreateStringHandle'
-    TabOrder = 8
+    TabOrder = 7
     OnClick = cmdDdeCreateStringHandleClick
   end
   object txtAdvise: TEdit
@@ -126,7 +110,7 @@ object Form1: TForm1
     Height = 23
     Top = 112
     Width = 127
-    TabOrder = 9
+    TabOrder = 8
     Text = 'MyAdvise'
     OnEditingDone = txtAdviseEditingDone
   end
@@ -143,7 +127,7 @@ object Form1: TForm1
     Top = 112
     Width = 168
     Caption = 'Check conversation'
-    TabOrder = 10
+    TabOrder = 9
     OnClick = cmdCheckConversationClick
   end
   object cmdCreateServiceName: TButton
@@ -152,7 +136,7 @@ object Form1: TForm1
     Top = 136
     Width = 168
     Caption = 'Create Service Name'
-    TabOrder = 11
+    TabOrder = 10
     OnClick = cmdCreateServiceNameClick
   end
   object cmdMeasureSizeString: TButton
@@ -161,7 +145,7 @@ object Form1: TForm1
     Top = 144
     Width = 168
     Caption = 'DdeQueryString [String]'
-    TabOrder = 12
+    TabOrder = 11
     OnClick = cmdMeasureSizeStringClick
   end
   object cmdDisconnectConversation: TButton
@@ -170,7 +154,7 @@ object Form1: TForm1
     Top = 168
     Width = 168
     Caption = 'Disconnect conversation'
-    TabOrder = 13
+    TabOrder = 12
     OnClick = cmdDisconnectConversationClick
   end
   object txtValue: TEdit
@@ -178,7 +162,7 @@ object Form1: TForm1
     Height = 23
     Top = 112
     Width = 127
-    TabOrder = 14
+    TabOrder = 13
     Text = '2.22'
     OnEditingDone = txtValueEditingDone
   end
@@ -188,5 +172,12 @@ object Form1: TForm1
     Top = 120
     Width = 31
     Caption = 'Value:'
+  end
+  object Label1: TLabel
+    Left = 416
+    Height = 15
+    Top = 48
+    Width = 51
+    Caption = 'DDE data:'
   end
 end

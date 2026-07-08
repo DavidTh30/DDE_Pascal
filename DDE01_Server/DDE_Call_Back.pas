@@ -135,8 +135,16 @@ begin
     log({$I %LINENUM%},': In server callback. uType:'+ IntToHex(uType, 8));
   end;
 
-  if (uFmt = CF_TEXT) or (uFmt =0) then
+  if (uFmt = CF_TEXT) or (uFmt = 0) or (uFmt = CF_UNICODETEXT)then
   begin
+    if (uFmt = CF_TEXT) then
+    begin
+      log({$I %LINENUM%},': Server: CF_TEXT');
+    end;
+    if (uFmt = CF_UNICODETEXT) then
+    begin
+      log({$I %LINENUM%},': Server: CF_UNICODETEXT');
+    end;
     if (uType = XTYP_ADVDATA) then
     begin
       log({$I %LINENUM%},': Server: XTYP_ADVDATA');
@@ -161,7 +169,7 @@ begin
 
           s:=Server_data^.Text+#0;
           log({$I %LINENUM%},' Server: Length(Server_data): '+Length(s).ToString);
-
+          log({$I %LINENUM%},' Server: Server_data= '+s);
           //DdeCreateDataHandle
           //idInst: Instance Identifier ที่ได้จากการเรียก
           //DdeInitializepSrc: พอยน์เตอร์ไปยังบัฟเฟอร์ที่เก็บข้อมูล
@@ -218,8 +226,6 @@ begin
       DdeGetData(hData, @BufferAnsiChar[0], Length(BufferAnsiChar), 0);
       BufferString:=string(BufferAnsiChar);
       BufferString:=UpCase(BufferString);
-      //Result := DDE_FNOTPROCESSED  // Did the client specify a command that server not understa
-      Result := DDE_FACK;  // Did the client specify a command that server understand
 
       //If (sBuffer := DDE_COMMAND1) Then
       //begin
@@ -237,6 +243,9 @@ begin
       //begin
       //  Result := DDE_FNOTPROCESSED
       //end;
+
+      //Result := DDE_FNOTPROCESSED  // Did the client specify a command that server not understa
+      Result := DDE_FACK;  // Did the client specify a command that server understand
       log({$I %LINENUM%},': Server: Result := DDE_FACK');
     end;
     if (uType = XTYP_MASK) then
@@ -269,11 +278,16 @@ begin
           lSize := DdeGetData(hData, nil, 0, 0);
           SetLength(BufferAnsiChar, 0);
           SetLength(BufferAnsiChar, lSize+1);
+          log({$I %LINENUM%},' Server: lSize+1: '+IntToStr(lSize+1));
           BufferString:= StringOfChar(#00, lSize+1); //clear / Initialize  Resets all elements to 0
 
           DdeGetData(hData, @BufferAnsiChar[0], Length(BufferAnsiChar), 0);
+          log({$I %LINENUM%},' Hex BufferAnsiChar: '+ AnsiArrayToHex(BufferAnsiChar));
 
           SetString(s, PAnsiChar(BufferAnsiChar), Length(BufferAnsiChar)); // Dynamic Array
+          s:=DelChars(s,#0);
+          log({$I %LINENUM%},' Server: Length(Server_data): '+Length(s).ToString);
+          log({$I %LINENUM%},' Server: Server_data= '+s);
           Server_data^.Text:=s;
           DdeFreeStringHandle(InstId, g_hszValue);
           g_hszValue := DdeCreateStringHandle(InstId, PAnsiChar(Server_data^.Text), CP_WINANSI);
@@ -352,6 +366,8 @@ begin
         If (s = txtItem_) Then
         begin
           s:=Server_data^.Text+#0;
+          log({$I %LINENUM%},' Server: Length(Server_data): '+Length(s).ToString);
+          log({$I %LINENUM%},' Server: Server_data= '+s);
           //DdeCreateDataHandle
           //idInst: Instance Identifier ที่ได้จากการเรียก
           //DdeInitializepSrc: พอยน์เตอร์ไปยังบัฟเฟอร์ที่เก็บข้อมูล
