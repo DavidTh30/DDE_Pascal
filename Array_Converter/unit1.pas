@@ -5,7 +5,8 @@ unit Unit1;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, StrUtils;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  StrUtils, PublicValue;
 
 type
 
@@ -18,6 +19,8 @@ type
     Button4: TButton;
     Button5: TButton;
     Button6: TButton;
+    Button7: TButton;
+    Edit1: TEdit;
     Memo1: TMemo;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -25,8 +28,11 @@ type
     procedure Button4Click(Sender: TObject);
     procedure Button5Click(Sender: TObject);
     procedure Button6Click(Sender: TObject);
+    procedure Button7Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
-
+    Private_String: string;
   public
 
   end;
@@ -334,6 +340,39 @@ begin
   SetString(s, PAnsiChar(BufferAnsiChar), Length(BufferAnsiChar)); // Dynamic Array
   log2({$I %LINENUM%},' BufferAnsiChar: "'+ s +'"');
   log2({$I %LINENUM%},' Hex BufferAnsiChar: "'+ AnsiArrayToHex(BufferAnsiChar) +'"');
+end;
+
+procedure TForm1.Button7Click(Sender: TObject);
+//var
+//  FTextPtr: PString;
+//  CharPointer: PChar;
+//  s:string;
+begin
+  //FTextPtr := PAnsistring(Edit1.Text);
+  //FTextPtr := PAnsistring(s);
+  //CharPointer:= @Edit1.Text[1];
+  ////FTextPtr^ := 'U';
+  //CharPointer^:='h';
+  ////Application.QueueAsyncCall(@FormCreate,Sender);
+
+  if Ted <> nil then
+  begin
+    Private_String:='Private';
+    Ted^.Text:=Private_String;
+  end;
+  Change();
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  new(Ted);
+  Ted^:=Edit1;
+end;
+
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+  Dispose(Ted);
+  if Ted <> nil then Ted^:=nil;   //Assigned(Ted)  //Assigned(MyPointer)
 end;
 
 end.
