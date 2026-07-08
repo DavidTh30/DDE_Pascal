@@ -37,7 +37,7 @@ var
   DDE_data: ^TLabel;
   Server_data:^TEdit;
   bRunning : Boolean;         // Server running flag.
-  g_hszAppName, g_hszTopicName, g_hszItemName, g_hszItemAdvise: HSZ;
+  g_hszAppName, g_hszTopicName, g_hszItemName, g_hszItemAdvise, g_hszValue: HSZ;
   InstId: DWORD;
   DdeInitializeResultCode: UINT;
   hConv_: HCONV;
@@ -122,7 +122,6 @@ var
   BufferAnsiChar: array of AnsiChar;
   BufferAnsiString: AnsiString;
   BufferString: string;
-  Ret : Long;
   s:string;
   i:integer;
 begin
@@ -156,13 +155,36 @@ begin
       Result := DDE_FACK;
       log({$I %LINENUM%},': Server: Result := DDE_FACK');
     end;
+    if (uType = XTYP_ADVREQ) then
+    begin
+      log({$I %LINENUM%},': Server: XTYP_ADVREQ');
+
+          s:=Server_data^.Text;
+          //DdeCreateDataHandle
+          //idInst: Instance Identifier ที่ได้จากการเรียก
+          //DdeInitializepSrc: พอยน์เตอร์ไปยังบัฟเฟอร์ที่เก็บข้อมูล
+          //cb: ขนาดของข้อมูล (เป็นไบต์)
+          //cbOff: ระยะออฟเซ็ตจากจุดเริ่มต้นของข้อมูล
+          //hszItem: String Handle ที่ระบุชื่อรายการข้อมูล
+          //wFmt: รูปแบบข้อมูล (เช่น CF_TEXT)afCmd: ค่าแฟล็ก เช่น
+          //HDATA_APPOWNED (ระบุว่าแอปพลิเคชันเป็นเจ้าของออบเจ็กต์นี้)
+          Result := DdeCreateDataHandle(InstId, PByte(PAnsiChar(s)), Length(s), 0, g_hszValue, CF_TEXT, 0);
+          log({$I %LINENUM%},': Server: Result := '+Result.ToString);
+
+    end;
     if (uType = XTYP_ADVSTART) then
     begin
       log({$I %LINENUM%},': Server: XTYP_ADVSTART');
+
+      Result := DDE_FACK;
+      log({$I %LINENUM%},': Server: Result := DDE_FACK');
     end;
     if (uType = XTYP_ADVSTOP) then
     begin
       log({$I %LINENUM%},': Server: XTYP_ADVSTOP');
+
+      Result := DDE_FACK;
+      log({$I %LINENUM%},': Server: Result := DDE_FACK');
     end;
     if (uType = XTYP_CONNECT) then
     begin
@@ -273,8 +295,6 @@ begin
       log({$I %LINENUM%},': Server: XTYP_REQUEST');
       lSize := DdeQueryString(InstId, hsz2, nil, 0, CP_WINANSI);
       log({$I %LINENUM%},' Server: lSize: '+lSize.ToString);
-      SetLength(BufferAnsiChar, 0); //clear / Initialize
-      SetLength(BufferAnsiChar, lSize); //clear / Initialize
 
       if lSize > 0 then
       begin
@@ -288,14 +308,15 @@ begin
         //i:=0;
         //if Length(BufferAnsiChar)>=1 then
         //if IntToHex(Ord(BufferAnsiChar[High(BufferAnsiChar)])) = '00' then i:=1;
-        BufferAnsiChar:=DelChars(string(BufferAnsiChar),#0).ToCharArray;
-
         //SetString(BufferAnsiString, PAnsiChar(@BufferAnsiChar[0]), Length(BufferAnsiChar)-i);
+
         SetString(BufferAnsiString, PAnsiChar(@BufferAnsiChar[0]), Length(BufferAnsiChar));
 
         ////////////////////////////////////////////////
+
         SetString(s, PAnsiChar(BufferAnsiChar), Length(BufferAnsiChar)); // Dynamic Array
         s:=DelChars(s,#0);
+
         //log({$I %LINENUM%},' Server: s := string(AnsiStr) Length(s): '+Length(s).ToString);
         //s:=s;
         //log({$I %LINENUM%},' Server: s:=s Length(s): '+Length(s).ToString);
@@ -333,6 +354,7 @@ begin
           //hszItem: String Handle ที่ระบุชื่อรายการข้อมูล
           //wFmt: รูปแบบข้อมูล (เช่น CF_TEXT)afCmd: ค่าแฟล็ก เช่น
           //HDATA_APPOWNED (ระบุว่าแอปพลิเคชันเป็นเจ้าของออบเจ็กต์นี้)
+
           Result := DdeCreateDataHandle(InstId, PByte(PAnsiChar(s)), Length(s), 0, hsz2, CF_TEXT, 0);
           log({$I %LINENUM%},': Server: Result := '+Result.ToString);
         end

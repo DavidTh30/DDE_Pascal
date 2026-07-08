@@ -194,6 +194,7 @@ begin
   g_hszTopicName := DdeCreateStringHandle(InstId, PAnsiChar(txtTopic.Text), CP_WINANSI);
   g_hszItemName := DdeCreateStringHandle(InstId, PAnsiChar(txtItem.Text), CP_WINANSI);
   g_hszItemAdvise := DdeCreateStringHandle(InstId, PAnsiChar(txtAdvise.Text), CP_WINANSI);
+  g_hszValue := DdeCreateStringHandle(InstId, PAnsiChar(txtValue.Text), CP_WINANSI);
 
   log({$I %LINENUM%},' Server: DdeCreateStringHandle------------------------');
   log({$I %LINENUM%},' Server: DdeCreateStringHandle  g_hszAppName: '+ IntToHex(g_hszAppName, 8));
@@ -310,6 +311,20 @@ begin
     log({$I %LINENUM%},' Server: String handle not create');
   end;
 
+  Length_ := DdeQueryString(InstId, g_hszValue, nil, 0, CP_WINANSI);
+  if Length_ > 0 then
+  begin
+    SetLength(AnsiStr, 0); // Resets all elements to 0
+    SetLength(AnsiStr, Length_+1);
+    Length_ := DdeQueryString(InstId, g_hszValue, PAnsiChar(AnsiStr), Length(AnsiStr), CP_WINANSI);
+    s := string(AnsiStr);
+    log({$I %LINENUM%},' Server: ResultString s: '+s);
+  end
+  else
+  begin
+    log({$I %LINENUM%},' Server: String handle not create');
+  end;
+
   SetLength(AnsiStr, 0);  // Free/Clean up memory
 end;
 
@@ -342,6 +357,7 @@ begin
     DdeFreeStringHandle(InstId, g_hszTopicName);
     DdeFreeStringHandle(InstId, g_hszItemName);
     DdeFreeStringHandle(InstId, g_hszItemAdvise);
+    DdeFreeStringHandle(InstId, g_hszValue);
     log({$I %LINENUM%},' Server: DdeFreeStringHandle -------------------------');
 
     If DdeUninitialize(InstId) Then
