@@ -35,7 +35,11 @@ type
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
     Shape1: TShape;
+    Shape2: TShape;
+    Shape3: TShape;
     txtService1: TEdit;
     txtTopic1: TEdit;
     txtValue: TEdit;
@@ -763,10 +767,12 @@ begin
   if hConv_ > 0 then
   begin
     log({$I %LINENUM%},' Client: Connected Success hConv_: '+hConv_.ToString);
+    Shape2.Brush.Color:=clGreen;
   end
   else
   begin
     log({$I %LINENUM%},' Client: Connect failed hConv_: '+hConv_.ToString);
+    Shape2.Brush.Color:=clWhite;
     TranslateError();
   end;
 
@@ -873,6 +879,7 @@ begin
       TranslateError();
     End;
     hConv_ := 0;
+    Shape2.Brush.Color:=clWhite;
   End;
 
   // Tear down the initialized instance.
@@ -1210,6 +1217,7 @@ begin
         Label1.caption := 'DDE data: '+string(sFinal);
         log({$I %LINENUM%},' Client: sFinal: '+sFinal);
 
+        Shape3.Brush.Color:=clGreen;
         // Free the DDE subsystem resources.
         DdeFreeDataHandle (lRet);
       end
@@ -1220,6 +1228,7 @@ begin
       End;
     End;
     DDE_FreeStringHandles();
+    Shape3.Brush.Color:=clWhite;
   end
   Else
   begin
@@ -1275,6 +1284,7 @@ begin
     begin
         // Perform the transaction.
         lRet := DdeClientTransaction(nil, 0, g_hDDEConv, g_hItem, CF_TEXT, XTYP_ADVSTART, 2000, @lTransVal);
+        Shape3.Brush.Color:=clGreen;
 
         If (lRet>0) Then
         begin
@@ -1332,6 +1342,7 @@ begin
     End;
 
     DDE_FreeStringHandles();
+    Shape3.Brush.Color:=clWhite;
 end;
 
 procedure TForm1.cmdUninitializeClick(Sender: TObject);
