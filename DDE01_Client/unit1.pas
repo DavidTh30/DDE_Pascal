@@ -37,6 +37,7 @@ type
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
+    Label7: TLabel;
     Shape1: TShape;
     Shape2: TShape;
     Shape3: TShape;
@@ -429,6 +430,8 @@ var
   sBuffer : array of Byte;
   ReceivedText: string;
   s:string;
+  lpData:Pbyte;
+  i:integer;
 begin
   SetLength(sBuffer, 0); //clear / Initialize
 
@@ -464,8 +467,27 @@ begin
         SetString(s, PAnsiChar(@sBuffer[0]), Length(sBuffer));
         log({$I %LINENUM%},': Client: Length(s): '+Length(s).toString);
 
-        form1.Label1.caption := 'DDE data: '+String(s); //form1.Label1.caption := 'DDE data: '+sBuffer;
+        form1.Label1.caption := 'DDE data: '+'"'+String(s)+'"'; //form1.Label1.caption := 'DDE data: '+sBuffer;
       End;
+
+      lpData:=DdeAccessData(hData,@cb);
+      log({$I %LINENUM%},': Client: cb: '+cb.ToString);
+      If (cb > 0) Then
+      begin
+        s:='';
+        SetLength(sBuffer, cb);
+        Move(lpData^, sBuffer[0], cb);
+        for i:=low(sBuffer) to High(sBuffer)  do
+        begin
+          if i <> low(sBuffer) then s:=s+':';
+          //s:=s+chr(sBuffer[i]); //IntToHex(Ord(sBuffer[i]), 2);
+          //s:=s+IntToHex(Ord(sBuffer[i]), 2);
+          s:=s+sBuffer[i].ToHexString(2);
+        end;
+      end;
+
+      form1.Label7.caption := 'DDE data [Hex]: '+s;
+      DdeUnaccessData(hData);
       Result := DDE_FACK;
     end;
     if (uType = XTYP_ADVSTART) then
@@ -820,6 +842,7 @@ var
   DataSize: DWORD;
   sBuffer: array of Byte;
   s:AnsiString;
+  i:integer;
 begin
 
   if hDataQUOTE > 0 then
@@ -852,7 +875,16 @@ begin
 
     //Label1.Caption:='DDE data: '+ String(Buffer);
     //Label1.Caption:='DDE data: '+ExtractDdeString(hDataQUOTE);
-    Label1.Caption:='DDE data: '+string(s);
+    form1.Label1.caption := 'DDE data: '+'"'+String(s)+'"';
+    s:='';
+    for i:=low(sBuffer) to High(sBuffer)  do
+    begin
+      if i <> low(sBuffer) then s:=s+':';
+      //s:=s+chr(sBuffer[i]); //IntToHex(Ord(sBuffer[i]), 2);
+      //s:=s+IntToHex(Ord(sBuffer[i]), 2);
+      s:=s+sBuffer[i].ToHexString(2);
+    end;
+    form1.Label7.caption := 'DDE data [Hex]: '+s;
   end
   else
   begin
@@ -944,7 +976,8 @@ begin
   if hDataQUOTE > 0 then
   begin
     s:=ReadDdeWithAccessData(hDataQUOTE);
-    Label1.Caption:='DDE data: '+string(s);
+    form1.Label1.caption := 'DDE data: '+'"'+String(s)+'"';
+    form1.Label7.caption := 'DDE data [Hex]: ';
   end
   else
   begin
@@ -1141,6 +1174,7 @@ var
   txtService_:string;
   txtTopic_:string;
   txtItem_:string;
+  i:integer;
 begin
   SetLength(sBuffer, 0); //clear / Initialize
   txtService_:=txtService.Text;
@@ -1214,8 +1248,18 @@ begin
         log({$I %LINENUM%},' lSize: ' + lSize.ToString);
 
         SetString(sFinal, PAnsiChar(@sBuffer[0]), Length(sBuffer));
-        Label1.caption := 'DDE data: '+string(sFinal);
+        form1.Label1.caption := 'DDE data: '+'"'+String(sFinal)+'"';
         log({$I %LINENUM%},' Client: sFinal: '+sFinal);
+
+        sFinal:='';
+        for i:=low(sBuffer) to High(sBuffer)  do
+        begin
+          if i <> low(sBuffer) then sFinal:=sFinal+':';
+          //s:=s+chr(sBuffer[i]); //IntToHex(Ord(sBuffer[i]), 2);
+          //s:=s+IntToHex(Ord(sBuffer[i]), 2);
+          sFinal:=sFinal+sBuffer[i].ToHexString(2);
+        end;
+        form1.Label7.caption := 'DDE data [Hex]: '+sFinal;
 
         Shape3.Brush.Color:=clGreen;
         // Free the DDE subsystem resources.
@@ -1228,6 +1272,22 @@ begin
       End;
     End;
     DDE_FreeStringHandles();
+
+    If (g_hDDEConv>0) Then
+    begin
+    log({$I %LINENUM%},' Client: Make sure we don''t have any open connections');
+    If DdeDisconnect(g_hDDEConv) Then
+    begin
+      log({$I %LINENUM%},' Client: DDE Disconnect Success.: '+ IntToHex(DdeInitializeResultCode_Pascal, 8));
+    end
+    Else
+    begin
+      log({$I %LINENUM%},' Client: DDE Disconnect Failure.: '+ IntToHex(DdeInitializeResultCode_Pascal, 8));
+      TranslateError();
+    End;
+    g_hDDEConv := 0;
+  End;
+
     Shape3.Brush.Color:=clWhite;
   end
   Else

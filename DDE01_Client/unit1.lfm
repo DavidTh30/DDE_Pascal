@@ -11,9 +11,9 @@ object Form1: TForm1
   OnCreate = FormCreate
   LCLVersion = '3.4.0.0'
   object Label1: TLabel
-    Left = 608
+    Left = 235
     Height = 15
-    Top = 112
+    Top = 184
     Width = 51
     Caption = 'DDE data:'
   end
@@ -323,5 +323,12 @@ object Form1: TForm1
     Top = 160
     Width = 70
     Caption = 'Server Online'
+  end
+  object Label7: TLabel
+    Left = 235
+    Height = 15
+    Top = 208
+    Width = 83
+    Caption = 'DDE data [Hex]:'
   end
 end
