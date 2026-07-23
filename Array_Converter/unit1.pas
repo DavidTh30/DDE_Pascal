@@ -20,6 +20,8 @@ type
     Button5: TButton;
     Button6: TButton;
     Button7: TButton;
+    Button8: TButton;
+    Button9: TButton;
     Edit1: TEdit;
     Memo1: TMemo;
     procedure Button1Click(Sender: TObject);
@@ -29,6 +31,8 @@ type
     procedure Button5Click(Sender: TObject);
     procedure Button6Click(Sender: TObject);
     procedure Button7Click(Sender: TObject);
+    procedure Button8Click(Sender: TObject);
+    procedure Button9Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
@@ -71,6 +75,11 @@ begin
 
   // Convert buffer to hex string
   BinToHex(PChar(InputStr), PChar(Result), Length(InputStr));
+end;
+
+procedure log(message_: string);
+begin
+  Form1.Memo1.Append(message_);
 end;
 
 procedure log2(LINENUM_: integer; message_: string);
@@ -361,6 +370,72 @@ begin
     Ted^.Text:=Private_String;
   end;
   Change();
+end;
+
+procedure TForm1.Button8Click(Sender: TObject);
+var
+  sBuffer : array of Byte;
+  i:integer;
+  BufferByte : array of Byte;  // Dynamic Array
+  cb: DWORD;
+  lpData:Pbyte;
+  s:string;
+begin
+
+  SetLength(sBuffer, 5);
+  for i:=low(sBuffer) to high(sBuffer) do sBuffer[i]:= $30+i;
+  lpData := @sBuffer[0];
+  log({$I %LINEN%}+' chr(lpData^): "'+ chr(lpData^) +'"');
+
+  cb:=length(sBuffer);
+  SetLength(BufferByte, cb);
+  Move(lpData^, BufferByte[0], cb);
+
+  s := StringOf(BufferByte);
+  log({$I %LINEN%}+' BufferByte: "'+ s +'"');
+
+  s:='';
+  for i:=0 to cb-1 do
+  begin
+    if i <> 0 then s:=s+':';
+    s:=s+IntToHex(Ord(BufferByte[i]), 2);
+  end;
+
+  log({$I %LINEN%}+' BufferByte[Hex]: "'+ s +'"');
+end;
+
+procedure TForm1.Button9Click(Sender: TObject);
+var
+  sBuffer : array of Byte;
+  i:integer;
+  BufferByte : array of Byte;  // Dynamic Array
+  cb: DWORD;
+  ByteArrayPtr: PByteArray;
+  s:string;
+begin
+
+  SetLength(sBuffer, 5);
+  for i:=low(sBuffer) to high(sBuffer) do sBuffer[i]:= $30+i;
+  //ByteArrayPtr := @sBuffer; // For Static / Fixed-Size Arrays
+  //ByteArrayPtr := PByteArray(@sBuffer); // For Static / Fixed-Size Arrays
+  ByteArrayPtr := PByteArray(@sBuffer[0]);  //For Dynamic Arrays
+  log({$I %LINEN%}+' chr(ByteArrayPtr^[0]): "'+ chr(ByteArrayPtr^[0]) +'"');
+
+  cb:=length(sBuffer);
+  SetLength(BufferByte, cb);
+  Move(ByteArrayPtr^[0], BufferByte[0], cb);
+
+  s := StringOf(BufferByte);
+  log({$I %LINEN%}+' BufferByte: "'+ s +'"');
+
+  s:='';
+  for i:=0 to cb-1 do
+  begin
+    if i <> 0 then s:=s+':';
+    s:=s+IntToHex(Ord(BufferByte[i]), 2);
+  end;
+
+  log({$I %LINEN%}+' BufferByte[Hex]: "'+ s +'"');
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
